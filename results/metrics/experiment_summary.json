@@ -1,8 +1,13 @@
 {
-    "total_frames_evaluated": 69,
-    "avg_mae_without_imu_m": 0.8407,
-    "avg_mae_with_imu_m": 0.839,
-    "avg_mse_without_imu_m2": 0.8578,
-    "avg_mse_with_imu_m2": 0.8549,
-    "overall_mse_reduction_percentage": 0.34
+    "experiment_name": "Continuous Dynamic Sensor Fusion Evaluation",
+    "total_frames_evaluated": 70,
+    "mean_f1_score": 0.7549,
+    "mean_precision": 0.7388,
+    "mean_recall": 0.8389,
+    "mean_localization_error_m": 0.4482,
+    "mean_latency_ms": 293.72,
+    "mean_throughput_fps": 4.2,
+    "nominal_baseline_f1": 0.9796,
+    "camera_blur_f1": 0.9941,
+    "lidar_dropout_f1": 0.3373
 }

@@ -1,9 +1,9 @@
 {
     "total_frames_evaluated": 70,
-    "mean_latency_ms": 153.88,
-    "fps": 6.5,
-    "mean_persistence_no_imu": 0.5079,
-    "mean_persistence_with_imu": 0.4994,
-    "displacement_jitter_no_imu_m": 0.8426,
-    "displacement_jitter_with_imu_m": 0.5099
+    "mean_latency_ms": 192.94,
+    "fps": 5.2,
+    "mean_persistence_no_imu": 0.4923,
+    "mean_persistence_with_imu": 0.4831,
+    "displacement_jitter_no_imu_m": 0.5036,
+    "displacement_jitter_with_imu_m": 0.5051
 }

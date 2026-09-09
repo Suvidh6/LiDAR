@@ -1,7 +1,7 @@
 """
 tests/test_fusion.py
 Unit tests for spatial association, motion compensation, temporal tracking,
-reliability estimation, and adaptive fusion.
+reliability estimation, health states, trends, weight hysteresis, and adaptive fusion.
 """
 
 import os
@@ -15,7 +15,7 @@ if PROJECT_ROOT not in sys.path:
 from src.fusion.spatial_association import compute_2d_iou
 from src.fusion.motion_compensation import MotionCompensator
 from src.fusion.temporal_tracker import TemporalTracker, TemporalTrack
-from src.fusion.reliability_estimation import ReliabilityEstimator
+from src.fusion.reliability_estimation import ReliabilityEstimator, SensorHealthState, ReliabilityTrend
 from src.fusion.adaptive_fusion import AdaptiveFusionEngine
 from src.perception.camera_detector import CameraDetection
 from src.perception.lidar_detector import LiDARCluster
@@ -50,16 +50,41 @@ def test_temporal_tracker():
     tracker = TemporalTracker(max_age=3, min_hits=2, dist_threshold=2.5, use_imu_compensation=True)
 
     det_f1 = [{"position": [15.0, 2.0, 0.0], "confidence": 0.85, "class_name": "vehicle"}]
-    # Frame 1: track initialized (not yet confirmed)
+    # Frame 1: track initialized (hits=1, not yet confirmed under min_hits=2)
     tracks_f1 = tracker.step(det_f1, T_ego=np.eye(4), dt=0.05)
+    assert len(tracks_f1) == 0, "Track must NOT be confirmed after only 1 hit when min_hits=2."
 
-    # Frame 2: observation confirmed
+    # Frame 2: observation confirmed (hits=2)
     det_f2 = [{"position": [15.1, 2.0, 0.0], "confidence": 0.88, "class_name": "vehicle"}]
     tracks_f2 = tracker.step(det_f2, T_ego=np.eye(4), dt=0.05)
     assert len(tracks_f2) == 1, "Track should be confirmed after 2 consecutive hits."
     assert tracks_f2[0].hits == 2
     assert tracks_f2[0].is_confirmed
     print("test_temporal_tracker: PASSED")
+
+def test_sensor_health_and_trend():
+    estimator = ReliabilityEstimator()
+
+    # Health states
+    assert estimator.classify_health(0.85) == SensorHealthState.HEALTHY
+    assert estimator.classify_health(0.55) == SensorHealthState.DEGRADED
+    assert estimator.classify_health(0.25) == SensorHealthState.SEVERELY_DEGRADED
+    assert estimator.classify_health(0.08) == SensorHealthState.FAILED
+
+    # Trends
+    deriv, trend = estimator.compute_trend(0.40, 0.80, dt=0.5)
+    assert trend in (ReliabilityTrend.DEGRADING, ReliabilityTrend.RAPIDLY_DEGRADING)
+    assert deriv < 0.0
+
+    deriv_up, trend_up = estimator.compute_trend(0.80, 0.40, dt=0.5)
+    assert trend_up == ReliabilityTrend.IMPROVING
+    assert deriv_up > 0.0
+
+    # Weight hysteresis smoothing
+    w_cam_s, w_lid_s = estimator.smooth_weights(0.9, 0.1, 0.5, 0.5)
+    assert abs((w_cam_s + w_lid_s) - 1.0) < 1e-6, "Weights must sum to 1.0."
+    assert 0.5 < w_cam_s < 0.9, f"Smoothed weight should be between prev (0.5) and raw (0.9), got {w_cam_s}"
+    print("test_sensor_health_and_trend: PASSED")
 
 def test_reliability_and_adaptive_fusion():
     engine = AdaptiveFusionEngine(nominal_lidar_points=2500)
@@ -93,5 +118,6 @@ if __name__ == "__main__":
     test_spatial_association_iou()
     test_motion_compensator()
     test_temporal_tracker()
+    test_sensor_health_and_trend()
     test_reliability_and_adaptive_fusion()
     print("All fusion tests passed successfully!")

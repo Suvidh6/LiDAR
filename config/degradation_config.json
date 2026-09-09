@@ -1,0 +1,153 @@
+{
+    "description": "Continuous dynamic degradation schedule across sequential frames.",
+    "schedule": [
+        {
+            "segment_id": "nominal_baseline",
+            "frame_range": [0, 14],
+            "description": "Clean nominal operating condition",
+            "camera": {
+                "blur_kernel": 0,
+                "illumination_factor": 1.0,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio": 0.0,
+                "noise_std": 0.0,
+                "spray_count": 0,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "camera_blur_ramp",
+            "frame_range": [15, 24],
+            "description": "Progressive camera motion blur and mild underexposure",
+            "progressive": true,
+            "camera": {
+                "blur_kernel_start": 3,
+                "blur_kernel_end": 21,
+                "illumination_start": 1.0,
+                "illumination_end": 0.40,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio": 0.0,
+                "noise_std": 0.0,
+                "spray_count": 0,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "camera_recovery",
+            "frame_range": [25, 34],
+            "description": "Camera recovery to nominal sharpness and lighting",
+            "progressive": true,
+            "camera": {
+                "blur_kernel_start": 19,
+                "blur_kernel_end": 0,
+                "illumination_start": 0.45,
+                "illumination_end": 1.0,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio": 0.0,
+                "noise_std": 0.0,
+                "spray_count": 0,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "lidar_dropout_ramp",
+            "frame_range": [35, 44],
+            "description": "Progressive LiDAR beam attenuation and environmental spray",
+            "progressive": true,
+            "camera": {
+                "blur_kernel": 0,
+                "illumination_factor": 1.0,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio_start": 0.10,
+                "dropout_ratio_end": 0.85,
+                "noise_std_start": 0.05,
+                "noise_std_end": 0.40,
+                "spray_count_start": 20,
+                "spray_count_end": 250,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "lidar_recovery",
+            "frame_range": [45, 54],
+            "description": "LiDAR beam recovery to nominal density",
+            "progressive": true,
+            "camera": {
+                "blur_kernel": 0,
+                "illumination_factor": 1.0,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio_start": 0.80,
+                "dropout_ratio_end": 0.0,
+                "noise_std_start": 0.35,
+                "noise_std_end": 0.0,
+                "spray_count_start": 200,
+                "spray_count_end": 0,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "camera_darkness_tunnel",
+            "frame_range": [55, 59],
+            "description": "Severe camera underexposure (night / tunnel entrance)",
+            "camera": {
+                "blur_kernel": 5,
+                "illumination_factor": 0.10,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio": 0.0,
+                "noise_std": 0.0,
+                "spray_count": 0,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "high_motion_maneuver",
+            "frame_range": [60, 64],
+            "description": "Ego-vehicle dynamic agility (sharp turn and braking)",
+            "camera": {
+                "blur_kernel": 7,
+                "illumination_factor": 0.85,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio": 0.15,
+                "noise_std": 0.10,
+                "spray_count": 30,
+                "outage": false
+            }
+        },
+        {
+            "segment_id": "dual_degradation_recovery",
+            "frame_range": [65, 69],
+            "description": "Combined camera blur + 70% LiDAR dropout transitioning to recovery",
+            "progressive": true,
+            "camera": {
+                "blur_kernel_start": 17,
+                "blur_kernel_end": 0,
+                "illumination_start": 0.20,
+                "illumination_end": 0.90,
+                "outage": false
+            },
+            "lidar": {
+                "dropout_ratio_start": 0.70,
+                "dropout_ratio_end": 0.0,
+                "noise_std_start": 0.30,
+                "noise_std_end": 0.0,
+                "spray_count_start": 150,
+                "spray_count_end": 0,
+                "outage": false
+            }
+        }
+    ]
+}

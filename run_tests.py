@@ -16,8 +16,10 @@ from tests.test_fusion import (
     test_spatial_association_iou,
     test_motion_compensator,
     test_temporal_tracker,
+    test_sensor_health_and_trend,
     test_reliability_and_adaptive_fusion
 )
+from tests.test_utils import test_paths_and_configs, test_reproducibility
 from tests.test_carla_connection import test_carla_connection
 
 def run_suite():
@@ -38,9 +40,14 @@ def run_suite():
     test_spatial_association_iou()
     test_motion_compensator()
     test_temporal_tracker()
+    test_sensor_health_and_trend()
     test_reliability_and_adaptive_fusion()
 
-    print("\n--- 4. Simulator Connection Check ---")
+    print("\n--- 4. Configuration, Path & Utility Tests ---")
+    test_paths_and_configs()
+    test_reproducibility()
+
+    print("\n--- 5. Simulator Connection Check ---")
     test_carla_connection()
 
     print("\n" + "=" * 65)

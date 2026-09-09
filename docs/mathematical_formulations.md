@@ -99,3 +99,45 @@ Let $\Theta = \{\text{Object}, \neg\text{Object}\}$ be the frame of discernment.
   $$m_{\text{lid}}(\text{Obj}) = R_{\text{lidar}}, \quad m_{\text{lid}}(\Theta) = 1 - R_{\text{lidar}}$$
 - Dempster's Rule of Combination:
   $$m_{\text{fused}}(\text{Obj}) = m_{\text{cam}}(\text{Obj}) m_{\text{lid}}(\text{Obj}) + m_{\text{cam}}(\text{Obj}) m_{\text{lid}}(\Theta) + m_{\text{cam}}(\Theta) m_{\text{lid}}(\text{Obj})$$
+
+---
+
+## 6. Dynamic Reliability Trends & Derivative Tracking
+
+To anticipate impending modality dropouts and track recovery trajectories, the system calculates the discrete time derivative of sensor reliability:
+$$\dot{R}(t) \approx \frac{R(t) - R(t - \Delta t)}{\Delta t}$$
+
+Categorization thresholds ($\Delta t = 0.05\,\text{s}$):
+- **Rapidly Degrading:** $\dot{R}(t) < -0.40\,\text{s}^{-1}$
+- **Degrading:** $-0.40 \le \dot{R}(t) < -0.05\,\text{s}^{-1}$
+- **Stable:** $-0.05 \le \dot{R}(t) \le +0.05\,\text{s}^{-1}$
+- **Improving / Recovering:** $\dot{R}(t) > +0.05\,\text{s}^{-1}$
+
+Operational Health Classification:
+$$\text{Health}(R) = \begin{cases} \text{HEALTHY}, & R \ge 0.70 \\ \text{DEGRADED}, & 0.40 \le R < 0.70 \\ \text{SEVERELY\_DEGRADED}, & 0.15 \le R < 0.40 \\ \text{FAILED}, & R < 0.15 \end{cases}$$
+
+---
+
+## 7. Temporal Weight Hysteresis Smoothing
+
+To eliminate high-frequency weight jitter during rapid illumination flickers or sparse point clusters, raw normalized weights $w_{\text{raw}}$ are filtered via an exponential moving average:
+$$w_{\text{cam, smooth}}(t) = \alpha \cdot w_{\text{cam, raw}}(t) + (1 - \alpha) \cdot w_{\text{cam, smooth}}(t - \Delta t)$$
+$$w_{\text{lidar, smooth}}(t) = \alpha \cdot w_{\text{lidar, raw}}(t) + (1 - \alpha) \cdot w_{\text{lidar, smooth}}(t - \Delta t)$$
+
+with nominal smoothing factor $\alpha = 0.65$. The weights are subsequently re-normalized:
+$$w_{\text{cam}}(t) = \frac{w_{\text{cam, smooth}}(t)}{w_{\text{cam, smooth}}(t) + w_{\text{lidar, smooth}}(t)}$$
+$$w_{\text{lidar}}(t) = 1.0 - w_{\text{cam}}(t)$$
+
+---
+
+## 8. Cross-Modal Spatial Agreement Formulation
+
+For an associated pair comprising 2D detection bounding box $\mathbf{B}_{\text{cam}} = [u_1, v_1, u_2, v_2]$ and 3D LiDAR cluster $\mathcal{C}_{\text{lidar}}$, the 8 bounding corners $\mathbf{p}_k \in \mathbb{R}^3$ ($k=1,\dots,8$) are projected onto the image plane:
+$$\mathbf{u}_k = \pi\left( K \cdot \left[ R_{\text{opt}} \mathbf{p}_k + \mathbf{t}_{\text{opt}} \right] \right)$$
+
+The projected 2D bounding envelope is formed:
+$$\mathbf{B}_{\text{proj}} = \left[ \min_k u_k, \; \min_k v_k, \; \max_k u_k, \; \max_k v_k \right]$$
+
+Cross-modal consistency $s_{\text{cross}} \in [0.0, 1.0]$ is computed as the intersection-over-union:
+$$s_{\text{cross}} = \text{IoU}(\mathbf{B}_{\text{cam}}, \mathbf{B}_{\text{proj}}) = \frac{\text{Area}(\mathbf{B}_{\text{cam}} \cap \mathbf{B}_{\text{proj}})}{\text{Area}(\mathbf{B}_{\text{cam}} \cup \mathbf{B}_{\text{proj}})}$$
+

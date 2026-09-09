@@ -1,0 +1,39 @@
+{
+    "experiment_id": "unified_sensor_fusion_dynamic_v1",
+    "project_name": "IMU-Assisted Temporal Reliability-Aware Camera-LiDAR Sensor Fusion",
+    "random_seed": 42,
+    "simulation": {
+        "simulator": "CARLA 0.9.16",
+        "fixed_delta_seconds": 0.05,
+        "default_frames": 70
+    },
+    "paths": {
+        "dataset_dir": "data/dynamic_dataset",
+        "metrics_dir": "results/metrics",
+        "plots_dir": "results/plots"
+    },
+    "execution": {
+        "run_dynamic_timeline": true,
+        "run_comparator_benchmark": true,
+        "save_visual_overlays": true,
+        "verbose": true
+    },
+    "benchmarking": {
+        "methods": [
+            "Camera-Only",
+            "LiDAR-Only",
+            "Late Fusion (Fixed)",
+            "Dempster-Shafer",
+            "Distance-Adaptive",
+            "Temporal Fusion",
+            "Proposed Adaptive Fusion"
+        ],
+        "static_conditions": [
+            "Clean_Nominal",
+            "Camera_Degraded",
+            "LiDAR_Degraded",
+            "Both_Degraded",
+            "Camera_Outage"
+        ]
+    }
+}

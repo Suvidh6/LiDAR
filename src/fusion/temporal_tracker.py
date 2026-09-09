@@ -15,13 +15,14 @@ class TemporalTrack:
     """Represents a 3D object tracklet across time."""
     _id_counter = 0
 
-    def __init__(self, init_pos, init_conf=0.8, class_name="vehicle"):
+    def __init__(self, init_pos, init_conf=0.8, class_name="vehicle", min_hits=2):
         TemporalTrack._id_counter += 1
         self.track_id = TemporalTrack._id_counter
         self.position = np.asarray(init_pos, dtype=np.float64)  # [x, y, z]
         self.velocity = np.zeros(3, dtype=np.float64)           # [vx, vy, vz]
         self.confidence = float(init_conf)
         self.class_name = str(class_name)
+        self.min_hits = int(min_hits)
 
         # State covariance P (6x6: [x, y, z, vx, vy, vz])
         self.P = np.eye(6, dtype=np.float64)
@@ -32,11 +33,12 @@ class TemporalTrack:
         self.age = 1
         self.time_since_update = 0
         self.history = [self.position.copy()]
+        self.displacement_errors = []
 
     @property
     def is_confirmed(self):
-        """Confirmed once observed in at least 2 frames or high persistence."""
-        return self.hits >= 2 or (self.hits == 1 and self.age == 1)
+        """Confirmed once observed in at least min_hits frames."""
+        return self.hits >= self.min_hits
 
     @property
     def persistence_ratio(self):
@@ -73,6 +75,10 @@ class TemporalTrack:
     def update(self, meas_pos, meas_conf=None, R_cov=None):
         """Standard 3D Kalman Filter measurement update."""
         z = np.asarray(meas_pos, dtype=np.float64)
+        pred_pos = self.position.copy()
+        disp = float(np.linalg.norm(z - pred_pos))
+        self.displacement_errors.append(disp)
+
         H = np.zeros((3, 6), dtype=np.float64)
         H[:3, :3] = np.eye(3)
 
@@ -167,7 +173,8 @@ class TemporalTracker:
                 new_track = TemporalTrack(
                     init_pos=det["position"],
                     init_conf=det.get("confidence", 0.7),
-                    class_name=det.get("class_name", "vehicle")
+                    class_name=det.get("class_name", "vehicle"),
+                    min_hits=self.min_hits
                 )
                 self.tracks.append(new_track)
 

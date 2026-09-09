@@ -21,43 +21,43 @@
             "method": "Camera-Only",
             "f1_score": 0.0,
             "localization_error_m": 0.0,
-            "fps": 12.9
+            "fps": 6.4
         },
         {
             "method": "LiDAR-Only",
             "f1_score": 0.9852,
-            "localization_error_m": 0.0137,
-            "fps": 13.0
+            "localization_error_m": 0.015,
+            "fps": 6.4
         },
         {
             "method": "Late Fusion (Fixed)",
-            "f1_score": 0.715,
-            "localization_error_m": 0.0137,
-            "fps": 12.9
+            "f1_score": 0.7145,
+            "localization_error_m": 0.015,
+            "fps": 6.4
         },
         {
             "method": "Dempster-Shafer",
             "f1_score": 0.9852,
-            "localization_error_m": 0.0137,
-            "fps": 12.9
+            "localization_error_m": 0.015,
+            "fps": 6.4
         },
         {
             "method": "Distance-Adaptive",
             "f1_score": 0.9852,
-            "localization_error_m": 0.0137,
-            "fps": 13.0
+            "localization_error_m": 0.015,
+            "fps": 6.4
         },
         {
             "method": "Temporal Fusion",
-            "f1_score": 0.4782,
-            "localization_error_m": 0.4565,
-            "fps": 12.5
+            "f1_score": 0.4226,
+            "localization_error_m": 0.5142,
+            "fps": 6.2
         },
         {
             "method": "Proposed Adaptive Fusion",
             "f1_score": 0.9852,
-            "localization_error_m": 0.0137,
-            "fps": 12.9
+            "localization_error_m": 0.015,
+            "fps": 6.4
         }
     ],
     "camera_degraded_results": [
@@ -68,33 +68,33 @@
         },
         {
             "method": "LiDAR-Only",
-            "f1_score": 0.9774,
-            "localization_error_m": 0.0179
+            "f1_score": 0.9719,
+            "localization_error_m": 0.0223
         },
         {
             "method": "Late Fusion (Fixed)",
-            "f1_score": 0.9774,
-            "localization_error_m": 0.0179
+            "f1_score": 0.9719,
+            "localization_error_m": 0.0223
         },
         {
             "method": "Dempster-Shafer",
-            "f1_score": 0.9774,
-            "localization_error_m": 0.0179
+            "f1_score": 0.9719,
+            "localization_error_m": 0.0223
         },
         {
             "method": "Distance-Adaptive",
-            "f1_score": 0.9774,
-            "localization_error_m": 0.0179
+            "f1_score": 0.9719,
+            "localization_error_m": 0.0223
         },
         {
             "method": "Temporal Fusion",
-            "f1_score": 0.5978,
-            "localization_error_m": 0.4467
+            "f1_score": 0.5462,
+            "localization_error_m": 0.5402
         },
         {
             "method": "Proposed Adaptive Fusion",
-            "f1_score": 0.9774,
-            "localization_error_m": 0.0179
+            "f1_score": 0.9719,
+            "localization_error_m": 0.0223
         }
     ],
     "lidar_degraded_results": [
@@ -105,33 +105,33 @@
         },
         {
             "method": "LiDAR-Only",
-            "f1_score": 0.0376,
-            "localization_error_m": 1.5757
+            "f1_score": 0.0412,
+            "localization_error_m": 1.2048
         },
         {
             "method": "Late Fusion (Fixed)",
-            "f1_score": 0.0222,
-            "localization_error_m": 1.5757
+            "f1_score": 0.0244,
+            "localization_error_m": 1.2048
         },
         {
             "method": "Dempster-Shafer",
-            "f1_score": 0.0376,
-            "localization_error_m": 1.5757
+            "f1_score": 0.0412,
+            "localization_error_m": 1.2048
         },
         {
             "method": "Distance-Adaptive",
-            "f1_score": 0.0376,
-            "localization_error_m": 1.5757
+            "f1_score": 0.0412,
+            "localization_error_m": 1.2048
         },
         {
             "method": "Temporal Fusion",
-            "f1_score": 0.029,
-            "localization_error_m": 1.5649
+            "f1_score": 0.0256,
+            "localization_error_m": 1.2142
         },
         {
             "method": "Proposed Adaptive Fusion",
-            "f1_score": 0.0179,
-            "localization_error_m": 1.1631
+            "f1_score": 0.0176,
+            "localization_error_m": 1.0786
         }
     ]
 }

@@ -1,0 +1,25 @@
+{
+    "timestamp_iso": "2026-09-09T22:47:28.326898",
+    "python_version": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "gpu_device": "None (CPU)",
+    "carla_target_version": "0.9.16",
+    "benchmark_conditions": [
+        "Clean_Nominal",
+        "Camera_Degraded",
+        "LiDAR_Degraded",
+        "Both_Degraded",
+        "Camera_Outage"
+    ],
+    "benchmark_methods": [
+        "Camera-Only",
+        "LiDAR-Only",
+        "Late Fusion (Fixed)",
+        "Dempster-Shafer",
+        "Distance-Adaptive",
+        "Temporal Fusion",
+        "Proposed Adaptive Fusion"
+    ],
+    "total_frames": 70
+}

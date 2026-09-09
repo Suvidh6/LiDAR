@@ -1,0 +1,76 @@
+{
+    "sensors": {
+        "camera": {
+            "image_width": 800,
+            "image_height": 600,
+            "fov": 90.0,
+            "mounting_position": [1.5, 0.0, 2.4],
+            "rotation": [0.0, 0.0, 0.0],
+            "max_reliable_range_m": 45.0
+        },
+        "lidar": {
+            "channels": 64,
+            "range_m": 50.0,
+            "points_per_second": 130000,
+            "rotation_frequency_hz": 10.0,
+            "nominal_points_per_frame": 2500,
+            "mounting_position": [0.0, 0.0, 2.5],
+            "rotation": [0.0, 0.0, 0.0],
+            "roi": {
+                "x_range": [0.0, 45.0],
+                "y_range": [-25.0, 25.0],
+                "z_range": [-2.5, 3.5]
+            }
+        },
+        "imu": {
+            "mounting_position": [0.0, 0.0, 2.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "gravity_magnitude_mps2": 9.81,
+            "accel_noise_std": 0.05,
+            "gyro_noise_std": 0.005
+        },
+        "synchronization": {
+            "timestep_seconds": 0.05,
+            "frequency_hz": 20.0,
+            "synchronous_mode": true
+        }
+    },
+    "perception": {
+        "camera_detector": {
+            "model_path": "yolov8n.pt",
+            "confidence_threshold": 0.25,
+            "laplacian_nominal_var": 60.0,
+            "illumination_nominal": 128.0
+        },
+        "lidar_detector": {
+            "ground_removal_threshold": 0.15,
+            "ground_ransac_iterations": 400,
+            "dbscan_eps": 0.8,
+            "dbscan_min_points": 8
+        }
+    },
+    "fusion": {
+        "spatial_association": {
+            "iou_threshold": 0.20,
+            "min_optical_depth_m": 0.5
+        },
+        "motion_compensation": {
+            "use_imu_warping": true
+        },
+        "temporal_tracker": {
+            "max_age_frames": 3,
+            "min_hits_confirmation": 2,
+            "distance_threshold_m": 2.5,
+            "dt_seconds": 0.05
+        },
+        "reliability": {
+            "smoothing_alpha": 0.65,
+            "health_thresholds": {
+                "healthy": 0.70,
+                "degraded": 0.40,
+                "severely_degraded": 0.15
+            },
+            "rapid_degradation_derivative_threshold": -0.15
+        }
+    }
+}
