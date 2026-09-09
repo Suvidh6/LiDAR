@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ap-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060911"/>
+      <stop offset="50%" stop-color="#0a1224"/>
+      <stop offset="100%" stop-color="#050812"/>
+    </linearGradient>
+
+    <linearGradient id="ap-cam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c2545"/>
+      <stop offset="100%" stop-color="#081526"/>
+    </linearGradient>
+    <linearGradient id="ap-lidar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#063328"/>
+      <stop offset="100%" stop-color="#041a14"/>
+    </linearGradient>
+    <linearGradient id="ap-imu" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#382506"/>
+      <stop offset="100%" stop-color="#1c1303"/>
+    </linearGradient>
+    <linearGradient id="ap-core" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#241042"/>
+      <stop offset="100%" stop-color="#120824"/>
+    </linearGradient>
+
+    <filter id="ap-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <style>
+    .ap-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 700; fill: #f8fafc; }
+    .ap-sub { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #94a3b8; }
+    .ap-card-head { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; font-weight: 700; }
+    .ap-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10.5px; fill: #cbd5e1; }
+    .ap-mono { font-family: 'SF Mono', Monaco, monospace; font-size: 9.5px; }
+  </style>
+
+  <rect width="1200" height="920" fill="url(#ap-bg)"/>
+
+  <!-- Top Title -->
+  <g transform="translate(60, 35)">
+    <text x="0" y="0" class="ap-title">DETAILED SYSTEM ARCHITECTURE &amp; DATA PROCESSING PIPELINE</text>
+    <text x="0" y="18" class="ap-sub">Synchronous lockstep execution in CARLA 0.9.16 at 20 Hz (Δt = 0.05 s) across perception, tracking, and reliability layers</text>
+  </g>
+
+  <!-- ================= LEVEL 1: SIMULATOR SOURCE ================= -->
+  <g transform="translate(60, 80)" filter="url(#ap-shadow)">
+    <rect width="1080" height="48" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+    <circle cx="25" cy="24" r="6" fill="#10b981"/>
+    <text x="42" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#f8fafc">
+      CARLA 0.9.16 SYNCHRONOUS SIMULATOR RUNTIME (20 Hz, Fixed Delta t = 0.05 s)
+    </text>
+    <text x="820" y="28" class="ap-mono" fill="#10b981">MAP: Town10HD_Opt • LOCKSTEP FIFO</text>
+  </g>
+
+  <!-- Downward Connectors from Simulator -->
+  <path d="M 230 128 L 230 160" stroke="#38bdf8" stroke-width="1.8"/>
+  <polygon points="230,163 226,155 234,155" fill="#38bdf8"/>
+
+  <path d="M 600 128 L 600 160" stroke="#34d399" stroke-width="1.8"/>
+  <polygon points="600,163 596,155 604,155" fill="#34d399"/>
+
+  <path d="M 970 128 L 970 160" stroke="#fbbf24" stroke-width="1.8"/>
+  <polygon points="970,163 966,155 974,155" fill="#fbbf24"/>
+
+  <!-- ================= LEVEL 2: 3 SENSOR MODALITY BRANCHES ================= -->
+  <!-- Branch 1: RGB Camera -->
+  <g transform="translate(60, 165)" filter="url(#ap-shadow)">
+    <rect width="330" height="155" rx="8" fill="url(#ap-cam)" stroke="#38bdf8" stroke-width="1.2"/>
+    <rect x="0" y="0" width="330" height="3" fill="#38bdf8" rx="1.5"/>
+    <text x="16" y="24" class="ap-card-head" fill="#38bdf8">📷 RGB CAMERA PERCEPTION BRANCH</text>
+    <text x="16" y="42" class="ap-mono" fill="#94a3b8">800 × 600 px • FOV 90° • p_cam = [1.5, 0, 2.4] m</text>
+    
+    <text x="16" y="66" class="ap-body" font-weight="700" fill="#f8fafc">• 2D Semantics: Ultralytics YOLOv8 (yolov8n.pt)</text>
+    <text x="26" y="82" class="ap-sub">Outputs: Class labels, Bounding Boxes B_cam, Conf c_det</text>
+    
+    <text x="16" y="104" class="ap-body" font-weight="700" fill="#f8fafc">• Optical Quality Extractor:</text>
+    <text x="26" y="120" class="ap-sub">Modified Laplacian Variance (Sharpness ψ_sharp)</text>
+    <text x="26" y="136" class="ap-sub">Mean Luminance Deviation (Illumination ψ_illum)</text>
+  </g>
+
+  <!-- Branch 2: 64-Beam LiDAR -->
+  <g transform="translate(435, 165)" filter="url(#ap-shadow)">
+    <rect width="330" height="155" rx="8" fill="url(#ap-lidar)" stroke="#34d399" stroke-width="1.2"/>
+    <rect x="0" y="0" width="330" height="3" fill="#34d399" rx="1.5"/>
+    <text x="16" y="24" class="ap-card-head" fill="#34d399">📡 64-BEAM LiDAR GEOMETRY BRANCH</text>
+    <text x="16" y="42" class="ap-mono" fill="#94a3b8">64 Channels • 20 Hz • p_lidar = [0, 0, 2.5] m</text>
+
+    <text x="16" y="66" class="ap-body" font-weight="700" fill="#f8fafc">• Point Cloud Preprocessing &amp; ROI Filter</text>
+    <text x="26" y="82" class="ap-sub">~3000 points/frame, range 50m, Open3D pipeline</text>
+
+    <text x="16" y="104" class="ap-body" font-weight="700" fill="#f8fafc">• RANSAC Ground Removal &amp; DBSCAN 3D:</text>
+    <text x="26" y="120" class="ap-sub">Separates drivable ground plane (distance_thresh=0.2m)</text>
+    <text x="26" y="136" class="ap-sub">Euclidean clustering → 3D Bounding Boxes &amp; 8 Vertices</text>
+  </g>
+
+  <!-- Branch 3: 6-DoF IMU -->
+  <g transform="translate(810, 165)" filter="url(#ap-shadow)">
+    <rect width="330" height="155" rx="8" fill="url(#ap-imu)" stroke="#fbbf24" stroke-width="1.2"/>
+    <rect x="0" y="0" width="330" height="3" fill="#fbbf24" rx="1.5"/>
+    <text x="16" y="24" class="ap-card-head" fill="#fbbf24">🧭 6-DoF IMU KINEMATICS BRANCH</text>
+    <text x="16" y="42" class="ap-mono" fill="#94a3b8">Specific Force + Gyro • p_imu = [0, 0, 2.0] m</text>
+
+    <text x="16" y="66" class="ap-body" font-weight="700" fill="#f8fafc">• Specific Force Gravity Removal:</text>
+    <text x="26" y="82" class="ap-mono" fill="#fbbf24">a_linear = [fx, fy, fz - 9.81]^T m/s²</text>
+
+    <text x="16" y="104" class="ap-body" font-weight="700" fill="#f8fafc">• Inter-Frame Kinematic Integration:</text>
+    <text x="26" y="120" class="ap-mono" fill="#fbbf24">ΔR ∈ SO(3),  Δt = v Δt + 0.5 a (Δt)²</text>
+    <text x="26" y="136" class="ap-sub">Builds Rigid Transform T_ego ∈ SE(3)</text>
+  </g>
+
+  <!-- Connectors from Branches to Association Layer -->
+  <path d="M 225 320 L 225 370 L 360 370 L 360 395" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+  <polygon points="360,398 356,390 364,390" fill="#38bdf8"/>
+
+  <path d="M 600 320 L 600 395" stroke="#34d399" stroke-width="1.8" fill="none"/>
+  <polygon points="600,398 596,390 604,390" fill="#34d399"/>
+
+  <!-- IMU branch bypass to Temporal Tracker and Motion Compensator -->
+  <path d="M 975 320 L 975 565 L 755 565 L 755 595" stroke="#fbbf24" stroke-width="1.8" fill="none"/>
+  <polygon points="755,598 751,590 759,590" fill="#fbbf24"/>
+
+  <!-- ================= LEVEL 3: SPATIAL CROSS-MODAL ASSOCIATION ================= -->
+  <g transform="translate(180, 400)" filter="url(#ap-shadow)">
+    <rect width="840" height="120" rx="8" fill="#101935" stroke="#818cf8" stroke-width="1.5"/>
+    <rect x="0" y="0" width="840" height="3" fill="#818cf8" rx="1.5"/>
+    
+    <text x="20" y="24" class="ap-card-head" fill="#818cf8">🔗 SPATIAL CROSS-MODAL ASSOCIATION LAYER</text>
+    <text x="20" y="42" class="ap-mono" fill="#c7d2fe">3D-to-2D Optical Projection (Matrix K) + Hungarian 2D Bounding Box IoU Matching</text>
+
+    <g transform="translate(20, 56)">
+      <rect width="380" height="50" rx="4" fill="#152142"/>
+      <text x="10" y="18" class="ap-mono" fill="#818cf8">Projection: u_k = π( K · [ R_opt p_k + t_opt ] )</text>
+      <text x="10" y="36" class="ap-sub">Projects 8 corner vertices to image envelope B_proj</text>
+    </g>
+
+    <g transform="translate(420, 56)">
+      <rect width="400" height="50" rx="4" fill="#152142"/>
+      <text x="10" y="18" class="ap-mono" fill="#34d399">Hungarian Assignment: C_ij = 1 - IoU(B_cam, B_proj)</text>
+      <text x="10" y="36" class="ap-sub">Assigns optimal cross-modal pairs (min overlap = 0.10)</text>
+    </g>
+  </g>
+
+  <!-- Connector from Spatial to Temporal Layer -->
+  <path d="M 500 520 L 500 595" stroke="#818cf8" stroke-width="1.8"/>
+  <polygon points="500,598 496,590 504,590" fill="#818cf8"/>
+
+  <!-- ================= LEVEL 4: TEMPORAL TRACKING & RELIABILITY ================= -->
+  <g transform="translate(60, 600)" filter="url(#ap-shadow)">
+    <rect width="1080" height="155" rx="8" fill="url(#ap-core)" stroke="#c084fc" stroke-width="1.5"/>
+    <rect x="0" y="0" width="1080" height="3" fill="#c084fc" rx="1.5"/>
+
+    <text x="20" y="24" class="ap-card-head" fill="#e9d5ff">🧠 TEMPORAL GATING &amp; DYNAMIC RELIABILITY ESTIMATOR</text>
+    <text x="20" y="42" class="ap-mono" fill="#c084fc">IMU-Warped Kalman Tracklets (min_hits ≥ 2) + Multi-Criteria Sensor Health Engine</text>
+
+    <!-- Sub-Block 1: Temporal Kalman Tracker -->
+    <g transform="translate(20, 55)">
+      <rect width="330" height="85" rx="6" fill="#1a0b33" stroke="#9333ea" stroke-width="0.8"/>
+      <text x="12" y="20" class="ap-mono" fill="#c084fc" font-weight="700">IMU-WARPED KALMAN TRACKER</text>
+      <text x="12" y="38" class="ap-sub">• Warps tracklet centroids via T_ego</text>
+      <text x="12" y="54" class="ap-sub">• Enforces min_hits ≥ 2 (eliminates false alarms)</text>
+      <text x="12" y="70" class="ap-mono" fill="#34d399">• Jitter Cut: -39.48% (0.84m → 0.51m)</text>
+    </g>
+
+    <!-- Sub-Block 2: Camera Reliability -->
+    <g transform="translate(370, 55)">
+      <rect width="330" height="85" rx="6" fill="#0c1b36" stroke="#38bdf8" stroke-width="0.8"/>
+      <text x="12" y="20" class="ap-mono" fill="#38bdf8" font-weight="700">CAMERA RELIABILITY (R_cam)</text>
+      <text x="12" y="38" class="ap-mono" font-size="8.5" fill="#38bdf8">c_det · ψ_vis · ψ_rng · ψ_mot · τ_temp</text>
+      <text x="12" y="54" class="ap-sub">• Lapl Sharpness + Illum Deviation</text>
+      <text x="12" y="70" class="ap-sub">• Range exp(-d/45) + Agitation penalty</text>
+    </g>
+
+    <!-- Sub-Block 3: LiDAR Reliability -->
+    <g transform="translate(720, 55)">
+      <rect width="340" height="85" rx="6" fill="#06241c" stroke="#34d399" stroke-width="0.8"/>
+      <text x="12" y="20" class="ap-mono" fill="#34d399" font-weight="700">LiDAR RELIABILITY (R_lidar)</text>
+      <text x="12" y="38" class="ap-mono" font-size="8.5" fill="#34d399">(0.50 γ_geom + 0.50 ρ_dens) · ψ_hlth · τ</text>
+      <text x="12" y="54" class="ap-sub">• Range-Calibrated Density: 1/d Model</text>
+      <text x="12" y="70" class="ap-sub">• Compactness + Spray Noise Resistance</text>
+    </g>
+  </g>
+
+  <!-- Connector from Temporal/Reliability to Adaptive Fusion -->
+  <path d="M 600 755 L 600 790" stroke="#c084fc" stroke-width="2"/>
+  <polygon points="600,793 596,785 604,785" fill="#c084fc"/>
+
+  <!-- ================= LEVEL 5: ADAPTIVE FUSION OUTPUT ================= -->
+  <g transform="translate(60, 795)" filter="url(#ap-shadow)">
+    <rect width="1080" height="95" rx="8" fill="#190a33" stroke="#f43f5e" stroke-width="1.8"/>
+    <rect x="0" y="0" width="1080" height="3" fill="#f43f5e" rx="1.5"/>
+
+    <text x="20" y="24" class="ap-card-head" fill="#f8fafc">⚖ RELIABILITY-AWARE ADAPTIVE FUSION ENGINE &amp; CALIBRATED OUTPUT</text>
+    
+    <g transform="translate(20, 36)">
+      <text x="0" y="18" class="ap-mono" fill="#f43f5e">• Exponential Hysteresis Weight Smoothing: α = 0.65 (Prevents high-frequency switching chatter)</text>
+      <text x="0" y="34" class="ap-mono" fill="#34d399">• Health States: HEALTHY (≥0.70), DEGRADED (0.40..0.70), SEV_DEGRADED (0.15..0.40), FAILED (&lt;0.15)</text>
+      <text x="0" y="50" class="ap-mono" fill="#38bdf8">• Dynamic Trend Derivatives: dR/dt (Anticipates impending dropouts)  •  Normalized Weights: w_cam + w_lidar = 1.0</text>
+    </g>
+
+    <rect x="830" y="20" width="230" height="60" rx="6" fill="#2d081f" stroke="#f43f5e" stroke-width="1.2"/>
+    <text x="845" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="#f8fafc">CALIBRATED 3D OBSTACLES</text>
+    <text x="845" y="62" class="ap-mono" fill="#f43f5e">MAE: 0.0888m • F1: 0.9852</text>
+  </g>
+</svg>

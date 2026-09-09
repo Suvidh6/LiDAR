@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="imu-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060a13"/>
+      <stop offset="100%" stop-color="#0a1224"/>
+    </linearGradient>
+    <linearGradient id="imu-box" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#121d36"/>
+      <stop offset="100%" stop-color="#0b1324"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .imu-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .imu-sub { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #94a3b8; }
+    .imu-math { font-family: 'SF Mono', Monaco, monospace; font-size: 11px; fill: #fbbf24; font-weight: 600; }
+    .imu-desc { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; fill: #cbd5e1; }
+    .imu-num { font-family: 'SF Mono', Monaco, monospace; font-size: 14px; font-weight: 700; }
+  </style>
+
+  <rect width="1100" height="500" rx="8" fill="url(#imu-bg)" stroke="#1e293b" stroke-width="1"/>
+
+  <text x="40" y="32" class="imu-title">IMU EGO-MOTION COMPENSATION &amp; SE(3) POINT-CLOUD WARPING</text>
+  <text x="40" y="48" class="imu-sub">Rigid-body kinematic integration over Δt = 50 ms eliminating inter-frame spatial smearing</text>
+
+  <!-- Left: Mathematical Formulation & Kinematics (500 wide) -->
+  <g transform="translate(40, 75)">
+    <!-- Step 1: Specific Force Decomposition -->
+    <rect width="490" height="115" rx="6" fill="url(#imu-box)" stroke="#fbbf24" stroke-width="1"/>
+    <rect x="0" y="0" width="4" height="115" fill="#fbbf24" rx="2"/>
+    <text x="16" y="24" class="imu-title" fill="#fbbf24">1. Specific Force Decomposition &amp; Gravity Removal</text>
+    <text x="16" y="48" class="imu-math">f_measured = a_linear - g,  g = [0, 0, -9.81]^T m/s²</text>
+    <text x="16" y="70" class="imu-math">a_linear = [fx,  fy,  fz - 9.81]^T m/s²</text>
+    <text x="16" y="94" class="imu-desc">Recovers true vehicle acceleration by subtracting downward gravity vector in CARLA frame.</text>
+
+    <!-- Step 2: SO(3) and SE(3) Formation -->
+    <g transform="translate(0, 130)">
+      <rect width="490" height="125" rx="6" fill="url(#imu-box)" stroke="#fbbf24" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="125" fill="#fbbf24" rx="2"/>
+      <text x="16" y="24" class="imu-title" fill="#fbbf24">2. Rigid-Body Transformation Matrix T_ego ∈ SE(3)</text>
+      <text x="16" y="48" class="imu-math">ΔR = R_z(ω_z Δt) · R_y(ω_y Δt) · R_x(ω_x Δt) ∈ SO(3)</text>
+      <text x="16" y="70" class="imu-math">Δt = v_{k-1} Δt + 0.5 a_linear (Δt)²</text>
+      <text x="16" y="92" class="imu-math">T_ego = [ ΔR  Δt ;  0^T  1 ] ∈ SE(3)</text>
+      <text x="16" y="112" class="imu-desc">Integrates high-rate gyroscope and linear acceleration over Δt = 0.05 s.</text>
+    </g>
+
+    <!-- Step 3: Point Cloud Warping Equation -->
+    <g transform="translate(0, 270)">
+      <rect width="490" height="110" rx="6" fill="url(#imu-box)" stroke="#38bdf8" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="110" fill="#38bdf8" rx="2"/>
+      <text x="16" y="24" class="imu-title" fill="#38bdf8">3. Inter-Frame Point-Cloud Warping (t-1 → t)</text>
+      <text x="16" y="52" class="imu-math" fill="#38bdf8">p_{t-1 → t} = ΔR^T (p_{t-1} - Δt)</text>
+      <text x="16" y="80" class="imu-desc">Transforms previous LiDAR returns into current vehicle coordinate frame, aligning dynamic historical scans with incoming observations.</text>
+    </g>
+  </g>
+
+  <!-- Right: Visual Comparison & Benchmark Proof (500 wide) -->
+  <g transform="translate(560, 75)">
+    <!-- Diagram: Uncompensated vs Compensated Visual -->
+    <rect width="500" height="235" rx="6" fill="#081022" stroke="#1e293b" stroke-width="1"/>
+    <text x="20" y="26" class="imu-title">POINT-CLOUD SPATIAL REGISTRATION COMPARISON</text>
+
+    <!-- Left Box: Uncompensated -->
+    <g transform="translate(20, 45)">
+      <rect width="215" height="170" rx="4" fill="#0c162d" stroke="#ef4444" stroke-width="1"/>
+      <text x="12" y="20" font-family="'SF Mono', Monaco, monospace" font-size="9.5" fill="#f87171" font-weight="700">RAW (UNCOMPENSATED)</text>
+      
+      <!-- Ghosting points -->
+      <!-- Frame t-1 points (red ghosted) -->
+      <circle cx="80" cy="70" r="3" fill="#ef4444" fill-opacity="0.8"/>
+      <circle cx="95" cy="65" r="3" fill="#ef4444" fill-opacity="0.8"/>
+      <circle cx="110" cy="72" r="3" fill="#ef4444" fill-opacity="0.8"/>
+      <circle cx="125" cy="80" r="3" fill="#ef4444" fill-opacity="0.8"/>
+      <circle cx="90" cy="90" r="3" fill="#ef4444" fill-opacity="0.8"/>
+      <circle cx="105" cy="85" r="3" fill="#ef4444" fill-opacity="0.8"/>
+
+      <!-- Frame t points (white actual) -->
+      <circle cx="95" cy="90" r="3" fill="#f8fafc"/>
+      <circle cx="110" cy="85" r="3" fill="#f8fafc"/>
+      <circle cx="125" cy="92" r="3" fill="#f8fafc"/>
+      <circle cx="140" cy="100" r="3" fill="#f8fafc"/>
+      <circle cx="105" cy="110" r="3" fill="#f8fafc"/>
+      <circle cx="120" cy="105" r="3" fill="#f8fafc"/>
+
+      <!-- Error Vectors -->
+      <line x1="80" y1="70" x2="95" y2="90" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="2 2"/>
+      <line x1="95" y1="65" x2="110" y2="85" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="2 2"/>
+      <line x1="110" y1="72" x2="125" y2="92" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="2 2"/>
+
+      <text x="12" y="145" class="imu-sub" fill="#f87171">MAE = 0.0964 m</text>
+      <text x="12" y="158" class="imu-sub" fill="#f87171">Jitter = 0.8426 m</text>
+    </g>
+
+    <!-- Right Box: IMU-Compensated -->
+    <g transform="translate(265, 45)">
+      <rect width="215" height="170" rx="4" fill="#0c162d" stroke="#34d399" stroke-width="1.2"/>
+      <text x="12" y="20" font-family="'SF Mono', Monaco, monospace" font-size="9.5" fill="#34d399" font-weight="700">IMU-WARPED SE(3)</text>
+
+      <!-- Perfectly aligned points -->
+      <circle cx="95" cy="90" r="4.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="95" cy="90" r="2.5" fill="#34d399"/>
+
+      <circle cx="110" cy="85" r="4.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="110" cy="85" r="2.5" fill="#34d399"/>
+
+      <circle cx="125" cy="92" r="4.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="125" cy="92" r="2.5" fill="#34d399"/>
+
+      <circle cx="140" cy="100" r="4.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="140" cy="100" r="2.5" fill="#34d399"/>
+
+      <circle cx="105" cy="110" r="4.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="105" cy="110" r="2.5" fill="#34d399"/>
+
+      <circle cx="120" cy="105" r="4.5" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="120" cy="105" r="2.5" fill="#34d399"/>
+
+      <text x="12" y="145" class="imu-sub" fill="#34d399">MAE = 0.0888 m (-7.88%)</text>
+      <text x="12" y="158" class="imu-sub" fill="#34d399">Jitter = 0.5099 m (-39.48%)</text>
+    </g>
+
+    <!-- Bottom 4 Quantitative Verification Cards -->
+    <g transform="translate(0, 250)">
+      <!-- Metric 1: MAE -->
+      <rect width="118" height="130" rx="6" fill="url(#imu-box)" stroke="#1e293b" stroke-width="1"/>
+      <text x="10" y="22" class="imu-sub">REGISTRATION MAE</text>
+      <text x="10" y="46" class="imu-sub" fill="#94a3b8">Raw: 0.0964 m</text>
+      <text x="10" y="66" class="imu-sub" fill="#f8fafc">IMU: 0.0888 m</text>
+      <text x="10" y="100" class="imu-num" fill="#34d399">-7.88%</text>
+      <text x="10" y="116" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#64748b">ERROR CUT</text>
+
+      <!-- Metric 2: MSE -->
+      <g transform="translate(127, 0)">
+        <rect width="118" height="130" rx="6" fill="url(#imu-box)" stroke="#1e293b" stroke-width="1"/>
+        <text x="10" y="22" class="imu-sub">REGISTRATION MSE</text>
+        <text x="10" y="46" class="imu-sub" fill="#94a3b8">Raw: 0.0383 m²</text>
+        <text x="10" y="66" class="imu-sub" fill="#f8fafc">IMU: 0.0315 m²</text>
+        <text x="10" y="100" class="imu-num" fill="#34d399">-17.75%</text>
+        <text x="10" y="116" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#64748b">ERROR CUT</text>
+      </g>
+
+      <!-- Metric 3: Peak Error -->
+      <g transform="translate(254, 0)">
+        <rect width="118" height="130" rx="6" fill="url(#imu-box)" stroke="#1e293b" stroke-width="1"/>
+        <text x="10" y="22" class="imu-sub">PEAK CORRECTION</text>
+        <text x="10" y="46" class="imu-sub" fill="#94a3b8">Raw: 0.4280 m²</text>
+        <text x="10" y="66" class="imu-sub" fill="#f8fafc">IMU: 0.2810 m²</text>
+        <text x="10" y="100" class="imu-num" fill="#38bdf8">-34.35%</text>
+        <text x="10" y="116" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#64748b">PEAK DROP</text>
+      </g>
+
+      <!-- Metric 4: Jitter -->
+      <g transform="translate(381, 0)">
+        <rect width="118" height="130" rx="6" fill="url(#imu-box)" stroke="#1e293b" stroke-width="1"/>
+        <text x="10" y="22" class="imu-sub">DISPLACEMENT JITTER</text>
+        <text x="10" y="46" class="imu-sub" fill="#94a3b8">Raw: 0.8426 m</text>
+        <text x="10" y="66" class="imu-sub" fill="#f8fafc">IMU: 0.5099 m</text>
+        <text x="10" y="100" class="imu-num" fill="#c084fc">-39.48%</text>
+        <text x="10" y="116" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#64748b">SMOOTHER</text>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sc-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070b14"/>
+      <stop offset="100%" stop-color="#0b1222"/>
+    </linearGradient>
+    <linearGradient id="sc-card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111c33"/>
+      <stop offset="100%" stop-color="#0b1324"/>
+    </linearGradient>
+    <pattern id="sc-road-grid" width="40" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 25" fill="none" stroke="#1e293b" stroke-width="0.8" stroke-opacity="0.6"/>
+    </pattern>
+    <radialGradient id="sc-cam-cone" cx="15%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
+    </radialGradient>
+    <radialGradient id="sc-lidar-rings" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <style>
+    .sc-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .sc-sub { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #94a3b8; }
+    .sc-legend-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 700; }
+    .sc-legend-desc { font-family: 'SF Mono', Monaco, monospace; font-size: 9.5px; fill: #94a3b8; }
+  </style>
+
+  <rect width="1050" height="480" rx="8" fill="url(#sc-bg)" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Top Title Bar -->
+  <text x="40" y="32" class="sc-title">EGO-VEHICLE MULTIMODAL PERCEPTION FIELD &amp; EXTRINSICS</text>
+  <text x="40" y="48" class="sc-sub">CARLA Unreal Engine Left-Handed Coordinate Frame (+X Forward, +Y Right, +Z Up)</text>
+
+  <!-- Left: Perspective 3D Perception Scene (620 wide) -->
+  <g transform="translate(40, 75)">
+    <!-- Ground / Road plane -->
+    <polygon points="0,320 180,90 440,90 620,320" fill="#080f1e" stroke="#1e293b" stroke-width="1"/>
+    
+    <!-- Perspective Grid lines -->
+    <line x1="180" y1="90" x2="0" y2="320" stroke="#1e293b" stroke-width="0.8"/>
+    <line x1="245" y1="90" x2="155" y2="320" stroke="#1e293b" stroke-width="0.8"/>
+    <line x1="310" y1="90" x2="310" y2="320" stroke="#334155" stroke-dasharray="8 6" stroke-width="1.5"/>
+    <line x1="375" y1="90" x2="465" y2="320" stroke="#1e293b" stroke-width="0.8"/>
+    <line x1="440" y1="90" x2="620" y2="320" stroke="#1e293b" stroke-width="0.8"/>
+
+    <line x1="140" y1="140" x2="480" y2="140" stroke="#1e293b" stroke-width="0.8"/>
+    <line x1="90" y1="200" x2="530" y2="200" stroke="#1e293b" stroke-width="0.8"/>
+    <line x1="40" y1="260" x2="580" y2="260" stroke="#1e293b" stroke-width="0.8"/>
+
+    <!-- LiDAR Concentric Scan Rings (Emerald) -->
+    <ellipse cx="310" cy="285" rx="140" ry="35" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="4 4"/>
+    <ellipse cx="310" cy="285" rx="220" ry="55" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="6 4"/>
+    <ellipse cx="310" cy="285" rx="290" ry="75" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="8 4"/>
+
+    <!-- Camera FOV Frustum (Cyan Cone 90°) -->
+    <polygon points="310,270 120,90 500,90" fill="url(#sc-cam-cone)" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.7"/>
+    <line x1="310" y1="270" x2="120" y2="90" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="310" y1="270" x2="500" y2="90" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <text x="310" y="105" text-anchor="middle" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#38bdf8" font-weight="600">CAMERA FOV: 90°</text>
+
+    <!-- Detected Target Obstacle at Range d = 18m -->
+    <g transform="translate(350, 150)">
+      <!-- 3D Bounding Box (LiDAR DBSCAN) -->
+      <polygon points="0,35 25,25 65,25 40,35" fill="#042e20" stroke="#34d399" stroke-width="1.2"/>
+      <polygon points="0,35 40,35 40,75 0,75" fill="#053e2c" stroke="#34d399" stroke-width="1.2"/>
+      <polygon points="40,35 65,25 65,65 40,75" fill="#03261a" stroke="#34d399" stroke-width="1.2"/>
+      
+      <!-- 2D Projected Bounding Box (Camera YOLOv8) -->
+      <rect x="-4" y="20" width="73" height="58" rx="2" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <rect x="-4" y="8" width="60" height="12" rx="2" fill="#0369a1"/>
+      <text x="-1" y="17" font-family="'SF Mono', Monaco, monospace" font-size="7.5" fill="#f8fafc" font-weight="700">VEHICLE 0.94</text>
+      
+      <!-- Spatial IoU Indicator -->
+      <text x="75" y="48" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#c084fc">IoU: 0.82</text>
+      <line x1="40" y1="48" x2="72" y2="48" stroke="#c084fc" stroke-width="1"/>
+    </g>
+
+    <!-- Ego Vehicle Body (Center Bottom) -->
+    <g transform="translate(270, 260)">
+      <!-- Vehicle Chassis Base -->
+      <rect x="0" y="10" width="80" height="40" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+      <rect x="15" y="0" width="50" height="30" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+      
+      <!-- Sensor Mounting Nodes on Ego -->
+      <!-- Camera Node: [1.5, 0.0, 2.4] -->
+      <circle cx="40" cy="5" r="4.5" fill="#38bdf8"/>
+      <text x="40" y="-3" text-anchor="middle" font-family="'SF Mono', Monaco, monospace" font-size="7.5" fill="#38bdf8" font-weight="700">CAM [1.5, 0, 2.4]</text>
+
+      <!-- LiDAR Node: [0.0, 0.0, 2.5] -->
+      <circle cx="40" cy="18" r="4.5" fill="#34d399"/>
+      <text x="95" y="22" font-family="'SF Mono', Monaco, monospace" font-size="7.5" fill="#34d399" font-weight="700">LiDAR [0, 0, 2.5]</text>
+      <line x1="45" y1="18" x2="90" y2="18" stroke="#34d399" stroke-width="0.8"/>
+
+      <!-- IMU Node: [0.0, 0.0, 2.0] -->
+      <circle cx="40" cy="32" r="4" fill="#fbbf24"/>
+      <text x="-35" y="35" font-family="'SF Mono', Monaco, monospace" font-size="7.5" fill="#fbbf24" font-weight="700">IMU [0, 0, 2.0]</text>
+      <line x1="35" y1="32" x2="-5" y2="32" stroke="#fbbf24" stroke-width="0.8"/>
+
+      <!-- 6-DoF Axis Triad -->
+      <g transform="translate(40, 32)">
+        <line x1="0" y1="0" x2="0" y2="-18" stroke="#fbbf24" stroke-width="1.5"/>
+        <polygon points="0,-20 -3,-15 3,-15" fill="#fbbf24"/>
+        <line x1="0" y1="0" x2="18" y2="0" stroke="#ef4444" stroke-width="1.5"/>
+        <polygon points="20,0 15,-3 15,3" fill="#ef4444"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Right: Sensor Specifications & Extrinsics Cards (340 wide) -->
+  <g transform="translate(680, 75)">
+    <!-- Card 1: Camera -->
+    <g transform="translate(0, 0)">
+      <rect width="330" height="95" rx="6" fill="url(#sc-card)" stroke="#38bdf8" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="95" fill="#38bdf8" rx="2"/>
+      <circle cx="22" cy="20" r="6" fill="#0284c7"/>
+      <text x="36" y="24" class="sc-legend-title" fill="#38bdf8">RGB CAMERA SPECIFICATION</text>
+      <text x="16" y="44" class="sc-legend-desc">• Mounting: p_cam = [1.5, 0.0, 2.4] m</text>
+      <text x="16" y="58" class="sc-legend-desc">• Intrinsics: fx = fy = 400.0 px, cx=400, cy=300</text>
+      <text x="16" y="72" class="sc-legend-desc">• Resolution: 800 × 600 px, FOV: 90°</text>
+      <text x="16" y="86" class="sc-legend-desc">• Model: YOLOv8 2D Semantics + Laplacian Sharpness</text>
+    </g>
+
+    <!-- Card 2: LiDAR -->
+    <g transform="translate(0, 110)">
+      <rect width="330" height="95" rx="6" fill="url(#sc-card)" stroke="#34d399" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="95" fill="#34d399" rx="2"/>
+      <circle cx="22" cy="20" r="6" fill="#059669"/>
+      <text x="36" y="24" class="sc-legend-title" fill="#34d399">64-BEAM LiDAR SPECIFICATION</text>
+      <text x="16" y="44" class="sc-legend-desc">• Mounting: p_lidar = [0.0, 0.0, 2.5] m</text>
+      <text x="16" y="58" class="sc-legend-desc">• Extrinsic Translation: t = [1.5, 0.0, -0.1] m</text>
+      <text x="16" y="72" class="sc-legend-desc">• 64 Channels, 20 Hz, ~3000 points/frame</text>
+      <text x="16" y="86" class="sc-legend-desc">• Processing: RANSAC Ground Cut + DBSCAN 3D</text>
+    </g>
+
+    <!-- Card 3: IMU -->
+    <g transform="translate(0, 220)">
+      <rect width="330" height="95" rx="6" fill="url(#sc-card)" stroke="#fbbf24" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="95" fill="#fbbf24" rx="2"/>
+      <circle cx="22" cy="20" r="6" fill="#d97706"/>
+      <text x="36" y="24" class="sc-legend-title" fill="#fbbf24">6-DoF IMU TELEMETRY SPECIFICATION</text>
+      <text x="16" y="44" class="sc-legend-desc">• Mounting: p_imu = [0.0, 0.0, 2.0] m</text>
+      <text x="16" y="58" class="sc-legend-desc">• Gravity Removal: a_linear = [fx, fy, fz - 9.81]</text>
+      <text x="16" y="72" class="sc-legend-desc">• SO(3) Rotation + SE(3) Rigid Transformation</text>
+      <text x="16" y="86" class="sc-legend-desc">• Vehicle Motion State Classification (6 States)</text>
+    </g>
+  </g>
+</svg>

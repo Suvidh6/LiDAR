@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 460" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sa-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060911"/>
+      <stop offset="100%" stop-color="#0a1223"/>
+    </linearGradient>
+    <linearGradient id="sa-card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111c34"/>
+      <stop offset="100%" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .sa-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .sa-sub { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #94a3b8; }
+    .sa-step { font-family: 'SF Mono', Monaco, monospace; font-size: 9px; font-weight: 600; }
+    .sa-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10.5px; fill: #cbd5e1; }
+    .sa-math { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #fbbf24; }
+  </style>
+
+  <rect width="1080" height="460" rx="8" fill="url(#sa-bg)" stroke="#1e293b" stroke-width="1"/>
+
+  <text x="40" y="32" class="sa-title">CROSS-MODAL SPATIAL ASSOCIATION PIPELINE</text>
+  <text x="40" y="48" class="sa-sub">3D LiDAR Cluster Projection via Pinhole Calibration Matrix K &amp; Hungarian 2D IoU Matching</text>
+
+  <!-- 4 Step Pipeline Architecture -->
+  <!-- Step 1: 3D LiDAR Cluster -->
+  <g transform="translate(40, 75)">
+    <rect width="220" height="340" rx="6" fill="url(#sa-card)" stroke="#34d399" stroke-width="1"/>
+    <rect x="0" y="0" width="220" height="3" fill="#34d399" rx="1.5"/>
+    <text x="16" y="24" class="sa-step" fill="#34d399">STEP 01: 3D EXTRACTION</text>
+    <text x="16" y="44" class="sa-title">LiDAR 3D Cluster</text>
+    
+    <!-- 3D BBox Illustration -->
+    <g transform="translate(40, 65)">
+      <polygon points="20,20 60,10 120,10 80,20" fill="#042e20" stroke="#34d399" stroke-width="1"/>
+      <polygon points="20,20 80,20 80,70 20,70" fill="#053e2c" stroke="#34d399" stroke-width="1"/>
+      <polygon points="80,20 120,10 120,60 80,70" fill="#03261a" stroke="#34d399" stroke-width="1"/>
+      <!-- 8 vertices -->
+      <circle cx="20" cy="20" r="3" fill="#34d399"/>
+      <circle cx="60" cy="10" r="3" fill="#34d399"/>
+      <circle cx="120" cy="10" r="3" fill="#34d399"/>
+      <circle cx="80" cy="20" r="3" fill="#34d399"/>
+      <circle cx="20" cy="70" r="3" fill="#34d399"/>
+      <circle cx="80" cy="70" r="3" fill="#34d399"/>
+      <circle cx="120" cy="60" r="3" fill="#34d399"/>
+    </g>
+
+    <text x="16" y="170" class="sa-body">• RANSAC extracts ground</text>
+    <text x="16" y="188" class="sa-body">• DBSCAN forms 3D clusters</text>
+    <text x="16" y="206" class="sa-body">• Computes 8 corner vertices:</text>
+    <text x="24" y="226" class="sa-math">p_k ∈ R³, k = 1..8</text>
+    <text x="16" y="254" class="sa-body">• 3D Centroid (x, y, z)</text>
+    <text x="16" y="272" class="sa-body">• Volume (dx, dy, dz)</text>
+  </g>
+
+  <!-- Arrow 1 to 2 -->
+  <path d="M 270 245 L 295 245" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <polygon points="298,245 291,241 291,249" fill="#34d399"/>
+
+  <!-- Step 2: Perspective Projection K -->
+  <g transform="translate(305, 75)">
+    <rect width="220" height="340" rx="6" fill="url(#sa-card)" stroke="#fbbf24" stroke-width="1"/>
+    <rect x="0" y="0" width="220" height="3" fill="#fbbf24" rx="1.5"/>
+    <text x="16" y="24" class="sa-step" fill="#fbbf24">STEP 02: PROJECTION K</text>
+    <text x="16" y="44" class="sa-title">Optical Perspective</text>
+
+    <!-- Calibration Equation Box -->
+    <g transform="translate(14, 65)">
+      <rect width="192" height="85" rx="4" fill="#181305" stroke="#d97706" stroke-width="0.8"/>
+      <text x="10" y="20" class="sa-math">K = [ 400.0   0.0  400.0 ]</text>
+      <text x="10" y="38" class="sa-math">    [   0.0 400.0  300.0 ]</text>
+      <text x="10" y="56" class="sa-math">    [   0.0   0.0    1.0 ]</text>
+      <text x="10" y="74" class="sa-math" fill="#38bdf8">u_k = π( K · [ R_opt p_k + t ] )</text>
+    </g>
+
+    <text x="16" y="180" class="sa-body">• Basis transform to optical frame:</text>
+    <text x="24" y="200" class="sa-math">[X_opt, Y_opt, Z_opt]^T</text>
+    <text x="16" y="228" class="sa-body">• Computes 2D image envelope:</text>
+    <text x="24" y="250" class="sa-math" fill="#38bdf8">B_proj = [min u, min v,</text>
+    <text x="80" y="268" class="sa-math" fill="#38bdf8">max u, max v]</text>
+    <text x="16" y="298" class="sa-body">• Filters frustum boundary</text>
+  </g>
+
+  <!-- Arrow 2 to 3 -->
+  <path d="M 535 245 L 560 245" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <polygon points="563,245 556,241 556,249" fill="#fbbf24"/>
+
+  <!-- Step 3: 2D IoU Spatial Overlap -->
+  <g transform="translate(570, 75)">
+    <rect width="220" height="340" rx="6" fill="url(#sa-card)" stroke="#38bdf8" stroke-width="1"/>
+    <rect x="0" y="0" width="220" height="3" fill="#38bdf8" rx="1.5"/>
+    <text x="16" y="24" class="sa-step" fill="#38bdf8">STEP 03: 2D OVERLAP</text>
+    <text x="16" y="44" class="sa-title">IoU Intersection</text>
+
+    <!-- Visual of two overlapping boxes -->
+    <g transform="translate(30, 65)">
+      <!-- Projected Box (Green/dashed) -->
+      <rect x="15" y="10" width="100" height="70" rx="3" fill="#042e20" fill-opacity="0.4" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 2"/>
+      <text x="20" y="25" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#34d399">B_proj (LiDAR)</text>
+
+      <!-- YOLOv8 Box (Cyan/solid) -->
+      <rect x="45" y="25" width="95" height="70" rx="3" fill="#0c2340" fill-opacity="0.4" stroke="#38bdf8" stroke-width="1.5"/>
+      <text x="65" y="85" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#38bdf8">B_cam (YOLO)</text>
+
+      <!-- Overlap hatch area -->
+      <rect x="45" y="25" width="70" height="55" fill="#8b5cf6" fill-opacity="0.35"/>
+    </g>
+
+    <text x="16" y="180" class="sa-body">• YOLOv8 outputs 2D box B_cam</text>
+    <text x="16" y="202" class="sa-body">• Formulates IoU formula:</text>
+    <text x="24" y="226" class="sa-math">IoU = Area(B_cam ∩ B_proj) /</text>
+    <text x="65" y="244" class="sa-math">     Area(B_cam ∪ B_proj)</text>
+    <text x="16" y="276" class="sa-body">• Cost matrix: C_ij = 1 - IoU_ij</text>
+    <text x="16" y="296" class="sa-body">• Min overlap threshold = 0.10</text>
+  </g>
+
+  <!-- Arrow 3 to 4 -->
+  <path d="M 800 245 L 825 245" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <polygon points="828,245 821,241 821,249" fill="#38bdf8"/>
+
+  <!-- Step 4: Hungarian Matching Output -->
+  <g transform="translate(835, 75)">
+    <rect width="205" height="340" rx="6" fill="url(#sa-card)" stroke="#c084fc" stroke-width="1.5"/>
+    <rect x="0" y="0" width="205" height="3" fill="#c084fc" rx="1.5"/>
+    <text x="16" y="24" class="sa-step" fill="#c084fc">STEP 04: ASSIGNMENT</text>
+    <text x="16" y="44" class="sa-title">Hungarian Match</text>
+
+    <!-- Match table visual -->
+    <g transform="translate(14, 65)">
+      <rect width="177" height="85" rx="4" fill="#1b0c36" stroke="#9333ea" stroke-width="0.8"/>
+      <text x="10" y="20" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#c084fc" font-weight="700">OPTIMAL BIPARTITE MAP</text>
+      <text x="10" y="40" class="sa-math" fill="#34d399">Cam_0 ↔ LiDAR_1 (0.84)</text>
+      <text x="10" y="58" class="sa-math" fill="#34d399">Cam_1 ↔ LiDAR_0 (0.76)</text>
+      <text x="10" y="76" class="sa-math" fill="#f43f5e">Cam_2 → Unmatched (FP)</text>
+    </g>
+
+    <text x="16" y="180" class="sa-body">• O(N³) Kuhn-Munkres solver</text>
+    <text x="16" y="200" class="sa-body">• Associated pairs form fused</text>
+    <text x="16" y="218" class="sa-body">  3D-2D object tracklets</text>
+    <text x="16" y="246" class="sa-body">• Unmatched LiDAR →</text>
+    <text x="24" y="264" class="sa-sub" fill="#34d399">LiDAR-only candidate</text>
+    <text x="16" y="286" class="sa-body">• Unmatched Camera →</text>
+    <text x="24" y="304" class="sa-sub" fill="#38bdf8">Camera-only candidate</text>
+  </g>
+</svg>

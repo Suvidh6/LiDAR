@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 460" width="100%" height="100%">
+  <defs>
+    <linearGradient id="tt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060912"/>
+      <stop offset="100%" stop-color="#091122"/>
+    </linearGradient>
+    <linearGradient id="tt-box" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#121b30"/>
+      <stop offset="100%" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .tt-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .tt-sub { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #94a3b8; }
+    .tt-head { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11.5px; font-weight: 700; }
+    .tt-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10px; fill: #cbd5e1; }
+    .tt-math { font-family: 'SF Mono', Monaco, monospace; font-size: 9.5px; fill: #818cf8; }
+    .tt-stat { font-family: 'SF Mono', Monaco, monospace; font-size: 15px; font-weight: 700; }
+  </style>
+
+  <rect width="1080" height="460" rx="8" fill="url(#tt-bg)" stroke="#1e293b" stroke-width="1"/>
+
+  <text x="40" y="32" class="tt-title">TEMPORAL MULTI-FRAME GATING &amp; IMU-WARPED KALMAN TRACKING</text>
+  <text x="40" y="48" class="tt-sub">6-DoF State Estimation with Empirical Confirmation Gate (min_hits ≥ 2) Suppressing Spurious False Alarms</text>
+
+  <!-- Left: Kalman Filter Lifecycle & Equations (500 wide) -->
+  <g transform="translate(40, 75)">
+    <!-- Stage 1: State Vector & Propagation -->
+    <rect width="480" height="110" rx="6" fill="url(#tt-box)" stroke="#818cf8" stroke-width="1"/>
+    <rect x="0" y="0" width="4" height="110" fill="#818cf8" rx="2"/>
+    <text x="16" y="24" class="tt-head" fill="#818cf8">1. 6-DoF State Representation &amp; IMU Motion Propagation</text>
+    <text x="16" y="46" class="tt-math">State Vector: x_t = [ x,  y,  z,  v_x,  v_y,  v_z ]^T ∈ R⁶</text>
+    <text x="16" y="66" class="tt-math">Ego Warping: x_{t|t-1} = T_{ego, t}^{-1} · x_{t-1|t-1}</text>
+    <text x="16" y="90" class="tt-body">Propagates existing tracklet centroids using inter-frame rigid transformation before measurement update.</text>
+
+    <!-- Stage 2: Prediction & Update Cycle -->
+    <g transform="translate(0, 125)">
+      <rect width="480" height="110" rx="6" fill="url(#tt-box)" stroke="#818cf8" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="110" fill="#818cf8" rx="2"/>
+      <text x="16" y="24" class="tt-head" fill="#818cf8">2. Discrete Kalman Prediction &amp; Covariance Update</text>
+      <text x="16" y="46" class="tt-math">Prediction: x̂_k = F x̂_{k-1},  P̂_k = F P_{k-1} F^T + Q</text>
+      <text x="16" y="66" class="tt-math">Kalman Gain: K_k = P̂_k H^T ( H P̂_k H^T + R )⁻¹</text>
+      <text x="16" y="88" class="tt-math">State Update: x̂_k = x̂_k + K_k ( z_k - H x̂_k ),  P_k = ( I - K_k H ) P̂_k</text>
+    </g>
+
+    <!-- Stage 3: Persistence Ratio -->
+    <g transform="translate(0, 250)">
+      <rect width="480" height="90" rx="6" fill="url(#tt-box)" stroke="#c084fc" stroke-width="1"/>
+      <rect x="0" y="0" width="4" height="90" fill="#c084fc" rx="2"/>
+      <text x="16" y="24" class="tt-head" fill="#c084fc">3. Tracklet Persistence Metric</text>
+      <text x="16" y="48" class="tt-math" fill="#c084fc">τ_temp = hits / age ∈ (0, 1.0]</text>
+      <text x="16" y="72" class="tt-body">Rewards temporally consistent obstacles. Transient single-frame detections have low persistence and are penalized.</text>
+    </g>
+  </g>
+
+  <!-- Right: Confirmation Gate State Machine & Visual (500 wide) -->
+  <g transform="translate(550, 75)">
+    <rect width="490" height="340" rx="6" fill="#081022" stroke="#1e293b" stroke-width="1"/>
+    <text x="20" y="26" class="tt-title">TRACKLET CONFIRMATION GATE STATE MACHINE</text>
+
+    <!-- State 1: Tentative (hits = 1) -->
+    <g transform="translate(20, 50)">
+      <rect width="130" height="120" rx="6" fill="#1b1528" stroke="#f43f5e" stroke-width="1.2"/>
+      <circle cx="20" cy="22" r="6" fill="#e11d48"/>
+      <text x="32" y="26" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#f43f5e" font-weight="700">TENTATIVE</text>
+      <text x="12" y="48" class="tt-body" fill="#f87171">• hits = 1</text>
+      <text x="12" y="66" class="tt-body">• First observation</text>
+      <rect x="10" y="80" width="110" height="26" rx="4" fill="#360a16"/>
+      <text x="18" y="97" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#fca5a5" font-weight="700">OUTPUT: BLOCKED</text>
+    </g>
+
+    <!-- Arrow Tentative to Confirmed -->
+    <path d="M 155 110 L 195 110" stroke="#34d399" stroke-width="2"/>
+    <polygon points="198,110 190,105 190,115" fill="#34d399"/>
+    <text x="156" y="100" font-family="'SF Mono', Monaco, monospace" font-size="7.5" fill="#34d399">hits ≥ 2</text>
+
+    <!-- State 2: Confirmed (hits >= 2) -->
+    <g transform="translate(200, 50)">
+      <rect width="145" height="120" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.5"/>
+      <circle cx="20" cy="22" r="6" fill="#059669"/>
+      <text x="32" y="26" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#34d399" font-weight="700">CONFIRMED</text>
+      <text x="12" y="48" class="tt-body" fill="#34d399">• hits ≥ 2</text>
+      <text x="12" y="66" class="tt-body">• Confirmed obstacle</text>
+      <rect x="10" y="80" width="125" height="26" rx="4" fill="#043d2c"/>
+      <text x="16" y="97" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#a7f3d0" font-weight="700">OUTPUT: EMITTED</text>
+    </g>
+
+    <!-- Arrow Confirmed to Coasting -->
+    <path d="M 350 110 L 375 110" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <polygon points="378,110 371,106 371,114" fill="#fbbf24"/>
+    <text x="352" y="100" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#fbbf24">missed</text>
+
+    <!-- State 3: Coasting -->
+    <g transform="translate(380, 50)">
+      <rect width="95" height="120" rx="6" fill="#261c06" stroke="#fbbf24" stroke-width="1"/>
+      <circle cx="16" cy="22" r="5" fill="#d97706"/>
+      <text x="26" y="25" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#fbbf24" font-weight="700">COASTING</text>
+      <text x="8" y="48" class="tt-body" fill="#fde047">• missed ≤ 3</text>
+      <text x="8" y="66" class="tt-body">• Kalman pred</text>
+      <rect x="6" y="80" width="83" height="26" rx="4" fill="#382806"/>
+      <text x="12" y="97" font-family="'SF Mono', Monaco, monospace" font-size="7.5" fill="#fef08a">MAINTAINED</text>
+    </g>
+
+    <!-- Bottom Statistical Callout -->
+    <g transform="translate(20, 195)">
+      <rect width="455" height="125" rx="6" fill="#0e172a" stroke="#334155" stroke-width="1"/>
+      <text x="16" y="24" class="tt-head" fill="#f8fafc">EMPIRICAL VALIDATION RESULT</text>
+      
+      <g transform="translate(16, 40)">
+        <text x="0" y="16" class="tt-sub">DISPLACEMENT JITTER REDUCTION</text>
+        <text x="0" y="44" class="tt-stat" fill="#38bdf8">0.8426 m → 0.5099 m (-39.48%)</text>
+        <text x="0" y="64" class="tt-body">IMU motion-warped tracklet propagation stabilizes 3D positions across high-speed maneuvers.</text>
+      </g>
+    </g>
+  </g>
+</svg>

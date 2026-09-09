@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="dt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060911"/>
+      <stop offset="100%" stop-color="#0a1224"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .dt-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .dt-sub { font-family: 'SF Mono', Monaco, monospace; font-size: 10px; fill: #94a3b8; }
+    .dt-phase { font-family: 'SF Mono', Monaco, monospace; font-size: 8.5px; font-weight: 700; }
+    .dt-name { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10px; font-weight: 700; fill: #f8fafc; }
+    .dt-detail { font-family: 'SF Mono', Monaco, monospace; font-size: 8px; fill: #94a3b8; }
+  </style>
+
+  <rect width="1180" height="480" rx="8" fill="url(#dt-bg)" stroke="#1e293b" stroke-width="1"/>
+
+  <text x="40" y="32" class="dt-title">CONTINUOUS TIME-VARYING DYNAMIC DEGRADATION SCHEDULE</text>
+  <text x="40" y="48" class="dt-sub">70 Synchronized Frames @ 20 Hz (Town10HD_Opt) — Progressive Environmental Regimes vs Adaptive Modal Hand-Off</text>
+
+  <!-- Horizontal Timeline Segments (Frames 0 to 69, 1100 px total width) -->
+  <g transform="translate(40, 75)">
+    <!-- Time Axis Header -->
+    <rect width="1100" height="24" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+    <text x="10" y="16" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#38bdf8" font-weight="700">t = 0.0 s</text>
+    <text x="240" y="16" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#94a3b8">t = 0.75 s</text>
+    <text x="550" y="16" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#94a3b8">t = 1.75 s</text>
+    <text x="865" y="16" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#94a3b8">t = 2.75 s</text>
+    <text x="1040" y="16" font-family="'SF Mono', Monaco, monospace" font-size="9" fill="#f43f5e" font-weight="700">t = 3.5 s</text>
+
+    <!-- Phase 1: Nominal (Frames 0-14, width: 235) -->
+    <g transform="translate(0, 35)">
+      <rect width="230" height="155" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.2"/>
+      <rect x="0" y="0" width="230" height="3" fill="#34d399" rx="1.5"/>
+      <text x="12" y="20" class="dt-phase" fill="#34d399">FRAMES 0 – 14</text>
+      <text x="12" y="38" class="dt-name">Nominal Baseline</text>
+      <text x="12" y="58" class="dt-detail">• Clear daylight, cruising</text>
+      <text x="12" y="74" class="dt-detail">• Unimpaired visual/LiDAR</text>
+      <text x="12" y="90" class="dt-detail">• F1-Score: 0.9913</text>
+      <rect x="10" y="110" width="210" height="32" rx="4" fill="#032119"/>
+      <text x="16" y="126" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#34d399" font-weight="600">Camera: HEALTHY (R=0.92)</text>
+      <text x="16" y="138" font-family="'SF Mono', Monaco, monospace" font-size="8.5" fill="#34d399" font-weight="600">LiDAR: HEALTHY (R=0.95)</text>
+    </g>
+
+    <!-- Phase 2: Camera Blur Ramp (Frames 15-24, width: 155) -->
+    <g transform="translate(235, 35)">
+      <rect width="150" height="155" rx="6" fill="#10253d" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect x="0" y="0" width="150" height="3" fill="#38bdf8" rx="1.5"/>
+      <text x="10" y="20" class="dt-phase" fill="#38bdf8">FRAMES 15 – 24</text>
+      <text x="10" y="38" class="dt-name">Motion Blur Ramp</text>
+      <text x="10" y="58" class="dt-detail">• Kernel 3×3 → 21×21</text>
+      <text x="10" y="74" class="dt-detail">• Progressive dimming</text>
+      <text x="10" y="90" class="dt-detail">• F1-Score: 0.9817</text>
+      <rect x="8" y="110" width="134" height="32" rx="4" fill="#08182b"/>
+      <text x="12" y="126" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#f87171" font-weight="600">R_cam: DEGRADED</text>
+      <text x="12" y="138" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#34d399" font-weight="600">w_lidar → 0.98</text>
+    </g>
+
+    <!-- Phase 3: Camera Recovery (Frames 25-34, width: 155) -->
+    <g transform="translate(390, 35)">
+      <rect width="150" height="155" rx="6" fill="#0d1b33" stroke="#818cf8" stroke-width="1"/>
+      <rect x="0" y="0" width="150" height="3" fill="#818cf8" rx="1.5"/>
+      <text x="10" y="20" class="dt-phase" fill="#818cf8">FRAMES 25 – 34</text>
+      <text x="10" y="38" class="dt-name">Camera Recovery</text>
+      <text x="10" y="58" class="dt-detail">• Blur fades 21×21 → clean</text>
+      <text x="10" y="74" class="dt-detail">• Illumination restored</text>
+      <text x="10" y="90" class="dt-detail">• Smooth weight return</text>
+      <rect x="8" y="110" width="134" height="32" rx="4" fill="#0b1324"/>
+      <text x="12" y="126" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#a5b4fc" font-weight="600">Trend: IMPROVING</text>
+      <text x="12" y="138" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#a5b4fc" font-weight="600">Hysteresis smooth</text>
+    </g>
+
+    <!-- Phase 4: LiDAR Dropout Ramp (Frames 35-44, width: 155) -->
+    <g transform="translate(545, 35)">
+      <rect width="150" height="155" rx="6" fill="#241708" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect x="0" y="0" width="150" height="3" fill="#fbbf24" rx="1.5"/>
+      <text x="10" y="20" class="dt-phase" fill="#fbbf24">FRAMES 35 – 44</text>
+      <text x="10" y="38" class="dt-name">LiDAR Attenuation</text>
+      <text x="10" y="58" class="dt-detail">• 10% → 85% dropout</text>
+      <text x="10" y="74" class="dt-detail">• Backscatter spray</text>
+      <text x="10" y="90" class="dt-detail">• Precision: 0.4000</text>
+      <rect x="8" y="110" width="134" height="32" rx="4" fill="#1f1203"/>
+      <text x="12" y="126" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#f87171" font-weight="600">R_lidar: SEV_DEGRADED</text>
+      <text x="12" y="138" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#38bdf8" font-weight="600">w_cam → 0.95</text>
+    </g>
+
+    <!-- Phase 5: LiDAR Recovery (Frames 45-54, width: 155) -->
+    <g transform="translate(700, 35)">
+      <rect width="150" height="155" rx="6" fill="#08231c" stroke="#34d399" stroke-width="1"/>
+      <rect x="0" y="0" width="150" height="3" fill="#34d399" rx="1.5"/>
+      <text x="10" y="20" class="dt-phase" fill="#34d399">FRAMES 45 – 54</text>
+      <text x="10" y="38" class="dt-name">LiDAR Recovery</text>
+      <text x="10" y="58" class="dt-detail">• Beam return restores</text>
+      <text x="10" y="74" class="dt-detail">• Spray clears out</text>
+      <text x="10" y="90" class="dt-detail">• Density recalibrated</text>
+      <rect x="8" y="110" width="134" height="32" rx="4" fill="#041a14"/>
+      <text x="12" y="126" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#34d399" font-weight="600">Density → nominal</text>
+      <text x="12" y="138" font-family="'SF Mono', Monaco, monospace" font-size="8" fill="#34d399" font-weight="600">Weights rebalanced</text>
+    </g>
+
+    <!-- Phase 6: Tunnel Plunge (Frames 55-59, width: 80) -->
+    <g transform="translate(855, 35)">
+      <rect width="75" height="155" rx="6" fill="#240711" stroke="#f43f5e" stroke-width="1.2"/>
+      <rect x="0" y="0" width="75" height="3" fill="#f43f5e" rx="1.5"/>
+      <text x="6" y="20" class="dt-phase" fill="#f43f5e" font-size="7.5">55 – 59</text>
+      <text x="6" y="36" class="dt-name" font-size="9">Darkness</text>
+      <text x="6" y="56" class="dt-detail" font-size="7.5">• 0.10x illum</text>
+      <text x="6" y="70" class="dt-detail" font-size="7.5">• Tunnel drop</text>
+      <rect x="5" y="110" width="65" height="32" rx="3" fill="#1a040b"/>
+      <text x="7" y="124" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#f87171" font-weight="700">R_cam &lt; 0.15</text>
+      <text x="7" y="136" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#34d399">LiDAR solo</text>
+    </g>
+
+    <!-- Phase 7: Maneuver (Frames 60-64, width: 80) -->
+    <g transform="translate(935, 35)">
+      <rect width="75" height="155" rx="6" fill="#241708" stroke="#fbbf24" stroke-width="1"/>
+      <rect x="0" y="0" width="75" height="3" fill="#fbbf24" rx="1.5"/>
+      <text x="6" y="20" class="dt-phase" fill="#fbbf24" font-size="7.5">60 – 64</text>
+      <text x="6" y="36" class="dt-name" font-size="9">Agitation</text>
+      <text x="6" y="56" class="dt-detail" font-size="7.5">• ω_z &gt; 15°/s</text>
+      <text x="6" y="70" class="dt-detail" font-size="7.5">• a_x &lt; -2 m/s²</text>
+      <rect x="5" y="110" width="65" height="32" rx="3" fill="#1a1003"/>
+      <text x="7" y="124" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#fbbf24" font-weight="700">IMU penalty</text>
+      <text x="7" y="136" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#fbbf24">Warp active</text>
+    </g>
+
+    <!-- Phase 8: Dual Degradation (Frames 65-69, width: 85) -->
+    <g transform="translate(1015, 35)">
+      <rect width="85" height="155" rx="6" fill="#260920" stroke="#c084fc" stroke-width="1.2"/>
+      <rect x="0" y="0" width="85" height="3" fill="#c084fc" rx="1.5"/>
+      <text x="6" y="20" class="dt-phase" fill="#c084fc" font-size="7.5">65 – 69</text>
+      <text x="6" y="36" class="dt-name" font-size="9">Dual Fail</text>
+      <text x="6" y="56" class="dt-detail" font-size="7.5">• 17x17 blur</text>
+      <text x="6" y="70" class="dt-detail" font-size="7.5">• 70% dropout</text>
+      <rect x="5" y="110" width="75" height="32" rx="3" fill="#1b0617"/>
+      <text x="7" y="124" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#c084fc" font-weight="700">c → 0.0773</text>
+      <text x="7" y="136" font-family="'SF Mono', Monaco, monospace" font-size="7" fill="#f43f5e">Alert trigger</text>
+    </g>
+
+    <!-- Bottom Continuous Area: Adaptive Weights Stream Profile -->
+    <g transform="translate(0, 205)">
+      <rect width="1100" height="180" rx="6" fill="#0b1325" stroke="#1e293b" stroke-width="1"/>
+      <text x="20" y="24" class="dt-name">DYNAMIC MODALITY WEIGHT PROFILE (w_cam vs w_lidar) ACROSS SEQUENCE</text>
+
+      <!-- Graph Axis -->
+      <line x1="40" y1="145" x2="1080" y2="145" stroke="#334155" stroke-width="1"/>
+      <line x1="40" y1="45" x2="1080" y2="45" stroke="#1e293b" stroke-width="0.8" stroke-dasharray="4 4"/>
+      <line x1="40" y1="95" x2="1080" y2="95" stroke="#1e293b" stroke-width="0.8" stroke-dasharray="4 4"/>
+      <text x="15" y="50" class="dt-detail">1.0</text>
+      <text x="15" y="100" class="dt-detail">0.5</text>
+      <text x="15" y="148" class="dt-detail">0.0</text>
+
+      <!-- w_cam curve (Cyan) -->
+      <path d="M 40 95 L 235 95 C 270 95, 290 140, 390 140 C 440 140, 480 95, 545 95 C 570 95, 600 50, 695 50 C 740 50, 780 95, 855 95 C 870 95, 885 142, 935 142 C 960 142, 980 95, 1015 95 C 1030 95, 1050 95, 1080 95" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+
+      <!-- w_lidar curve (Emerald) -->
+      <path d="M 40 95 L 235 95 C 270 95, 290 50, 390 50 C 440 50, 480 95, 545 95 C 570 95, 600 140, 695 140 C 740 140, 780 95, 855 95 C 870 95, 885 48, 935 48 C 960 48, 980 95, 1015 95 C 1030 95, 1050 95, 1080 95" fill="none" stroke="#34d399" stroke-width="2.5"/>
+
+      <!-- Legend -->
+      <g transform="translate(800, 16)">
+        <line x1="0" y1="6" x2="25" y2="6" stroke="#38bdf8" stroke-width="2.5"/>
+        <text x="32" y="10" class="dt-detail" fill="#38bdf8" font-weight="700">w_cam (Camera Weight)</text>
+        <line x1="150" y1="6" x2="175" y2="6" stroke="#34d399" stroke-width="2.5"/>
+        <text x="182" y="10" class="dt-detail" fill="#34d399" font-weight="700">w_lidar (LiDAR Weight)</text>
+      </g>
+    </g>
+  </g>
+</svg>
