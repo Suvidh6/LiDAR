@@ -1,0 +1,33 @@
+# Environments & Carla Simulator
+.venv/
+CARLA_0.9.16/
+
+# Raw Datasets (Heavy sensor recordings)
+data/
+*.ply
+
+# Pretrained model weights
+*.pt
+*.pth
+*.onnx
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.pytest_cache/
+
+# IDEs & OS files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & temporary files
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,137 @@
+{
+    "experiment": "Unified IMU-Assisted Temporal Reliability-Aware Multimodal Perception",
+    "conditions_evaluated": [
+        "Clean_Nominal",
+        "Camera_Degraded",
+        "LiDAR_Degraded",
+        "Both_Degraded",
+        "Camera_Outage"
+    ],
+    "methods_evaluated": [
+        "Camera-Only",
+        "LiDAR-Only",
+        "Late Fusion (Fixed)",
+        "Dempster-Shafer",
+        "Distance-Adaptive",
+        "Temporal Fusion",
+        "Proposed Adaptive Fusion"
+    ],
+    "clean_nominal_results": [
+        {
+            "method": "Camera-Only",
+            "f1_score": 0.0,
+            "localization_error_m": 0.0,
+            "fps": 12.9
+        },
+        {
+            "method": "LiDAR-Only",
+            "f1_score": 0.9852,
+            "localization_error_m": 0.0137,
+            "fps": 13.0
+        },
+        {
+            "method": "Late Fusion (Fixed)",
+            "f1_score": 0.715,
+            "localization_error_m": 0.0137,
+            "fps": 12.9
+        },
+        {
+            "method": "Dempster-Shafer",
+            "f1_score": 0.9852,
+            "localization_error_m": 0.0137,
+            "fps": 12.9
+        },
+        {
+            "method": "Distance-Adaptive",
+            "f1_score": 0.9852,
+            "localization_error_m": 0.0137,
+            "fps": 13.0
+        },
+        {
+            "method": "Temporal Fusion",
+            "f1_score": 0.4782,
+            "localization_error_m": 0.4565,
+            "fps": 12.5
+        },
+        {
+            "method": "Proposed Adaptive Fusion",
+            "f1_score": 0.9852,
+            "localization_error_m": 0.0137,
+            "fps": 12.9
+        }
+    ],
+    "camera_degraded_results": [
+        {
+            "method": "Camera-Only",
+            "f1_score": 0.0,
+            "localization_error_m": 0.0
+        },
+        {
+            "method": "LiDAR-Only",
+            "f1_score": 0.9774,
+            "localization_error_m": 0.0179
+        },
+        {
+            "method": "Late Fusion (Fixed)",
+            "f1_score": 0.9774,
+            "localization_error_m": 0.0179
+        },
+        {
+            "method": "Dempster-Shafer",
+            "f1_score": 0.9774,
+            "localization_error_m": 0.0179
+        },
+        {
+            "method": "Distance-Adaptive",
+            "f1_score": 0.9774,
+            "localization_error_m": 0.0179
+        },
+        {
+            "method": "Temporal Fusion",
+            "f1_score": 0.5978,
+            "localization_error_m": 0.4467
+        },
+        {
+            "method": "Proposed Adaptive Fusion",
+            "f1_score": 0.9774,
+            "localization_error_m": 0.0179
+        }
+    ],
+    "lidar_degraded_results": [
+        {
+            "method": "Camera-Only",
+            "f1_score": 0.0,
+            "localization_error_m": 0.0
+        },
+        {
+            "method": "LiDAR-Only",
+            "f1_score": 0.0376,
+            "localization_error_m": 1.5757
+        },
+        {
+            "method": "Late Fusion (Fixed)",
+            "f1_score": 0.0222,
+            "localization_error_m": 1.5757
+        },
+        {
+            "method": "Dempster-Shafer",
+            "f1_score": 0.0376,
+            "localization_error_m": 1.5757
+        },
+        {
+            "method": "Distance-Adaptive",
+            "f1_score": 0.0376,
+            "localization_error_m": 1.5757
+        },
+        {
+            "method": "Temporal Fusion",
+            "f1_score": 0.029,
+            "localization_error_m": 1.5649
+        },
+        {
+            "method": "Proposed Adaptive Fusion",
+            "f1_score": 0.0179,
+            "localization_error_m": 1.1631
+        }
+    ]
+}

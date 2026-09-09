@@ -1,0 +1,33 @@
+{
+  "camera": {
+    "width": 800,
+    "height": 600,
+    "fov": 90.0,
+    "confidence_threshold": 0.25,
+    "max_range_meters": 45.0
+  },
+  "lidar": {
+    "channels": 64,
+    "range_meters": 50.0,
+    "ground_threshold": 0.15,
+    "dbscan_eps": 0.8,
+    "min_cluster_points": 8,
+    "nominal_points_per_frame": 2500
+  },
+  "extrinsics": {
+    "camera_offset_xyz": [1.5, 0.0, 2.4],
+    "lidar_offset_xyz": [0.0, 0.0, 2.5],
+    "imu_offset_xyz": [0.0, 0.0, 2.0],
+    "lidar_to_camera_translation": [1.5, 0.0, -0.1]
+  },
+  "temporal_tracker": {
+    "max_age": 3,
+    "min_hits": 2,
+    "distance_threshold_meters": 2.5,
+    "sliding_window_size": 5
+  },
+  "benchmark": {
+    "ground_truth_match_distance_meters": 3.0,
+    "max_evaluation_distance_meters": 35.0
+  }
+}

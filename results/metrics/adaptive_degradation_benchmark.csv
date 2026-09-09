@@ -1,0 +1,36 @@
+condition,method,precision,recall,f1_score,localization_error_m,confidence,latency_ms,fps
+Clean_Nominal,Camera-Only,0.0,0.0,0.0,0.0,0.3631,77.24,12.9
+Clean_Nominal,LiDAR-Only,0.9931,0.9775,0.9852,0.0137,0.2645,77.22,13.0
+Clean_Nominal,Late Fusion (Fixed),0.5636,0.9775,0.715,0.0137,0.1862,77.37,12.9
+Clean_Nominal,Dempster-Shafer,0.9931,0.9775,0.9852,0.0137,0.3948,77.39,12.9
+Clean_Nominal,Distance-Adaptive,0.9931,0.9775,0.9852,0.0137,0.2334,77.21,13.0
+Clean_Nominal,Temporal Fusion,0.3168,0.9752,0.4782,0.4565,0.172,80.2,12.5
+Clean_Nominal,Proposed Adaptive Fusion,0.9931,0.9775,0.9852,0.0137,0.2468,77.54,12.9
+Camera_Degraded,Camera-Only,0.0,0.0,0.0,0.0,0.0,72.01,13.9
+Camera_Degraded,LiDAR-Only,0.9709,0.9841,0.9774,0.0179,0.2597,72.11,13.9
+Camera_Degraded,Late Fusion (Fixed),0.9709,0.9841,0.9774,0.0179,0.1528,72.1,13.9
+Camera_Degraded,Dempster-Shafer,0.9709,0.9841,0.9774,0.0179,0.3923,72.27,13.8
+Camera_Degraded,Distance-Adaptive,0.9709,0.9841,0.9774,0.0179,0.2292,72.09,13.9
+Camera_Degraded,Temporal Fusion,0.4301,0.9795,0.5978,0.4467,0.1486,73.72,13.6
+Camera_Degraded,Proposed Adaptive Fusion,0.9709,0.9841,0.9774,0.0179,0.2452,72.31,13.8
+LiDAR_Degraded,Camera-Only,0.0,0.0,0.0,0.0,0.3631,81.36,12.3
+LiDAR_Degraded,LiDAR-Only,0.2195,0.0205,0.0376,1.5757,0.396,81.24,12.3
+LiDAR_Degraded,Late Fusion (Fixed),0.0241,0.0205,0.0222,1.5757,0.2276,81.32,12.3
+LiDAR_Degraded,Dempster-Shafer,0.2195,0.0205,0.0376,1.5757,0.0668,81.26,12.3
+LiDAR_Degraded,Distance-Adaptive,0.2195,0.0205,0.0376,1.5757,0.3494,81.24,12.3
+LiDAR_Degraded,Temporal Fusion,0.0284,0.0297,0.029,1.5649,0.2227,82.34,12.1
+LiDAR_Degraded,Proposed Adaptive Fusion,0.4,0.0091,0.0179,1.1631,0.0673,81.38,12.3
+Both_Degraded,Camera-Only,0.0,0.0,0.0,0.0,0.0,63.29,15.8
+Both_Degraded,LiDAR-Only,0.8039,0.0928,0.1663,1.2776,0.2347,63.31,15.8
+Both_Degraded,Late Fusion (Fixed),0.8039,0.0928,0.1663,1.2776,0.1381,63.31,15.8
+Both_Degraded,Dempster-Shafer,0.8039,0.0928,0.1663,1.2776,0.0724,63.33,15.8
+Both_Degraded,Distance-Adaptive,0.8039,0.0928,0.1663,1.2776,0.2071,63.3,15.8
+Both_Degraded,Temporal Fusion,0.4348,0.1131,0.1795,1.1774,0.1323,63.52,15.7
+Both_Degraded,Proposed Adaptive Fusion,0.7895,0.0339,0.0651,1.7417,0.0763,63.33,15.8
+Camera_Outage,Camera-Only,0.0,0.0,0.0,0.0,0.0,57.89,17.3
+Camera_Outage,LiDAR-Only,0.9776,0.9932,0.9853,0.0151,0.261,57.97,17.3
+Camera_Outage,Late Fusion (Fixed),0.9776,0.9932,0.9853,0.0151,0.1535,57.95,17.3
+Camera_Outage,Dempster-Shafer,0.9776,0.9932,0.9853,0.0151,0.3933,58.1,17.2
+Camera_Outage,Distance-Adaptive,0.9776,0.9932,0.9853,0.0151,0.2303,57.95,17.3
+Camera_Outage,Temporal Fusion,0.4298,0.9886,0.5992,0.4558,0.1511,59.27,16.9
+Camera_Outage,Proposed Adaptive Fusion,0.9776,0.9932,0.9853,0.0151,0.2459,58.13,17.2

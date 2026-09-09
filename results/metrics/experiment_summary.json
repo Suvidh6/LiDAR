@@ -1,0 +1,8 @@
+{
+    "total_frames_evaluated": 69,
+    "avg_mae_without_imu_m": 0.8407,
+    "avg_mae_with_imu_m": 0.839,
+    "avg_mse_without_imu_m2": 0.8578,
+    "avg_mse_with_imu_m2": 0.8549,
+    "overall_mse_reduction_percentage": 0.34
+}
