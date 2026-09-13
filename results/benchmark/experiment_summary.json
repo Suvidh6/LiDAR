@@ -1,0 +1,9 @@
+{
+    "mean_f1_score": 0.0864,
+    "mean_precision": 0.1605,
+    "mean_recall": 0.0667,
+    "mean_loc_error_m": 0.6757,
+    "mean_fps": 7.8,
+    "mean_r_cam": 0.0451,
+    "mean_r_lidar": 0.2802
+}

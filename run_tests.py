@@ -10,6 +10,12 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+from tests.test_dataset import (
+    test_calibration_projection,
+    test_class_mapper,
+    test_ground_truth_structures,
+    test_adapter_factory
+)
 from tests.test_sensors import test_imu_kinematics, test_camera_model, test_pointcloud_io
 from tests.test_perception import test_camera_detector_quality, test_lidar_clustering
 from tests.test_fusion import (
@@ -26,6 +32,12 @@ def run_suite():
     print("=" * 65)
     print("      RUNNING UNIFIED SENSOR FUSION TEST SUITE")
     print("=" * 65)
+
+    print("\n--- 0. Dataset Abstraction Tests ---")
+    test_calibration_projection()
+    test_class_mapper()
+    test_ground_truth_structures()
+    test_adapter_factory()
 
     print("\n--- 1. Sensor & Kinematic Tests ---")
     test_imu_kinematics()

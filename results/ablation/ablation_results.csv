@@ -1,0 +1,29 @@
+variant,description,condition,precision,recall,f1_score,localization_error_m,jitter_m,latency_ms,fps,tp,fp,fn
+A0_Basic_Fusion,"Basic late 50/50 fusion (no IMU, no tracking, no reliability)",Clean_Nominal,0.4962,0.1571,0.2387,1.1963,13.1695,248.91,4.0,66,67,354
+A0_Basic_Fusion,"Basic late 50/50 fusion (no IMU, no tracking, no reliability)",Camera_Degraded,0.3579,0.081,0.132,1.686,11.7028,217.94,4.6,34,61,386
+A0_Basic_Fusion,"Basic late 50/50 fusion (no IMU, no tracking, no reliability)",LiDAR_Degraded,0.3125,0.0119,0.0229,1.2748,4.6118,190.71,5.2,5,11,415
+A0_Basic_Fusion,"Basic late 50/50 fusion (no IMU, no tracking, no reliability)",Both_Degraded,0.0476,0.019,0.0272,1.3906,6.8535,161.13,6.2,8,160,412
+A1_Plus_IMU,A0 + IMU ego-motion compensation,Clean_Nominal,0.4818,0.1571,0.237,1.3164,13.4917,216.21,4.6,66,71,354
+A1_Plus_IMU,A0 + IMU ego-motion compensation,Camera_Degraded,0.35,0.0833,0.1346,1.7936,11.9355,197.8,5.1,35,65,385
+A1_Plus_IMU,A0 + IMU ego-motion compensation,LiDAR_Degraded,0.3529,0.0143,0.0275,1.359,5.0253,222.18,4.5,6,11,414
+A1_Plus_IMU,A0 + IMU ego-motion compensation,Both_Degraded,0.0508,0.0214,0.0302,1.4653,6.121,202.18,4.9,9,168,411
+A2_Plus_Temporal,A1 + Temporal multi-frame Kalman tracking,Clean_Nominal,0.2652,0.1762,0.2117,1.1706,4.9147,214.16,4.7,74,205,346
+A2_Plus_Temporal,A1 + Temporal multi-frame Kalman tracking,Camera_Degraded,0.2042,0.1167,0.1485,1.546,4.8246,178.46,5.6,49,191,371
+A2_Plus_Temporal,A1 + Temporal multi-frame Kalman tracking,LiDAR_Degraded,0.2647,0.0214,0.0396,1.2676,3.9965,184.76,5.4,9,25,411
+A2_Plus_Temporal,A1 + Temporal multi-frame Kalman tracking,Both_Degraded,0.0291,0.0286,0.0288,1.4756,1.2602,186.59,5.4,12,400,408
+A3_Plus_Reliability,A2 + Multi-criteria physical reliability estimation,Clean_Nominal,0.1188,0.2286,0.1564,1.2,2.053,177.14,5.6,96,712,324
+A3_Plus_Reliability,A2 + Multi-criteria physical reliability estimation,Camera_Degraded,0.1065,0.1976,0.1384,1.7806,1.9347,183.2,5.5,83,696,337
+A3_Plus_Reliability,A2 + Multi-criteria physical reliability estimation,LiDAR_Degraded,1.0,0.0238,0.0465,1.3393,0.1442,191.91,5.2,10,0,410
+A3_Plus_Reliability,A2 + Multi-criteria physical reliability estimation,Both_Degraded,1.0,0.0476,0.0909,1.2212,0.109,139.08,7.2,20,0,400
+A4_Plus_Adaptive_Weights,A3 + Dynamic adaptive weight allocation,Clean_Nominal,0.0958,0.1905,0.1275,1.2255,2.0294,84.94,11.8,80,755,340
+A4_Plus_Adaptive_Weights,A3 + Dynamic adaptive weight allocation,Camera_Degraded,0.1082,0.1976,0.1398,1.9687,1.9325,79.43,12.6,83,684,337
+A4_Plus_Adaptive_Weights,A3 + Dynamic adaptive weight allocation,LiDAR_Degraded,1.0,0.0357,0.069,0.5662,0.2179,77.15,13.0,15,0,405
+A4_Plus_Adaptive_Weights,A3 + Dynamic adaptive weight allocation,Both_Degraded,1.0,0.0571,0.1081,1.73,0.1558,80.78,12.4,24,0,396
+A5_Plus_Hysteresis_Health,A4 + Weight hysteresis and health state machine,Clean_Nominal,0.1692,0.2357,0.197,1.4365,2.0536,150.64,6.6,99,486,321
+A5_Plus_Hysteresis_Health,A4 + Weight hysteresis and health state machine,Camera_Degraded,0.1088,0.1476,0.1253,1.8834,1.9367,174.25,5.7,62,508,358
+A5_Plus_Hysteresis_Health,A4 + Weight hysteresis and health state machine,LiDAR_Degraded,1.0,0.0238,0.0465,0.5477,0.0968,99.13,10.1,10,0,410
+A5_Plus_Hysteresis_Health,A4 + Weight hysteresis and health state machine,Both_Degraded,1.0,0.0571,0.1081,2.0669,0.2267,175.77,5.7,24,0,396
+A6_Full_Proposed,Full proposed system (+ consistency & trend derivatives),Clean_Nominal,0.1941,0.1262,0.153,1.4774,13.3461,101.72,9.8,53,220,367
+A6_Full_Proposed,Full proposed system (+ consistency & trend derivatives),Camera_Degraded,0.1203,0.069,0.0877,1.9576,12.1674,127.81,7.8,29,212,391
+A6_Full_Proposed,Full proposed system (+ consistency & trend derivatives),LiDAR_Degraded,1.0,0.0143,0.0282,0.4576,0.2507,170.83,5.9,6,0,414
+A6_Full_Proposed,Full proposed system (+ consistency & trend derivatives),Both_Degraded,0.0,0.0,0.0,0.0,0.7935,109.64,9.1,0,0,420

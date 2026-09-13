@@ -1,0 +1,8 @@
+Variant,Description,Precision,Recall,F1-Score,F1 Gain vs A0,Loc Error (m),Jitter (m),Latency (ms),FPS
+A0_Basic_Fusion,"Basic late 50/50 fusion (no IMU, no tracking, no reliability)",0.3035,0.0673,0.1052,+0.0000 (+0.0%),1.3869,9.0844,204.67,5.0
+A1_Plus_IMU,A0 + IMU ego-motion compensation,0.3089,0.069,0.1073,+0.0021 (+2.0%),1.4836,9.1434,209.59,4.8
+A2_Plus_Temporal,A1 + Temporal multi-frame Kalman tracking,0.1908,0.0857,0.1071,+0.0019 (+1.9%),1.365,3.749,190.99,5.3
+A3_Plus_Reliability,A2 + Multi-criteria physical reliability estimation,0.5563,0.1244,0.1081,+0.0029 (+2.7%),1.3853,1.0602,172.83,5.9
+A4_Plus_Adaptive_Weights,A3 + Dynamic adaptive weight allocation,0.551,0.1202,0.1111,+0.0059 (+5.6%),1.3726,1.0839,80.58,12.4
+A5_Plus_Hysteresis_Health,A4 + Weight hysteresis and health state machine,0.5695,0.1161,0.1192,+0.0140 (+13.3%),1.4836,1.0784,149.95,7.0
+A6_Full_Proposed,Full proposed system (+ consistency & trend derivatives),0.3286,0.0524,0.0672,-0.0380 (-36.1%),0.9731,6.6394,127.5,8.2

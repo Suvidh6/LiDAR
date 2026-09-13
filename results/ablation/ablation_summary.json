@@ -1,0 +1,89 @@
+{
+    "variants": [
+        "A0_Basic_Fusion",
+        "A1_Plus_IMU",
+        "A2_Plus_Temporal",
+        "A3_Plus_Reliability",
+        "A4_Plus_Adaptive_Weights",
+        "A5_Plus_Hysteresis_Health",
+        "A6_Full_Proposed"
+    ],
+    "conditions": [
+        "Clean_Nominal",
+        "Camera_Degraded",
+        "LiDAR_Degraded",
+        "Both_Degraded"
+    ],
+    "summary": [
+        {
+            "variant": "A0_Basic_Fusion",
+            "precision": 0.30355,
+            "recall": 0.06725,
+            "f1_score": 0.1052,
+            "localization_error_m": 1.386925,
+            "jitter_m": 9.0844,
+            "latency_ms": 204.6725,
+            "fps": 5.0
+        },
+        {
+            "variant": "A1_Plus_IMU",
+            "precision": 0.308875,
+            "recall": 0.069025,
+            "f1_score": 0.107325,
+            "localization_error_m": 1.483575,
+            "jitter_m": 9.143374999999999,
+            "latency_ms": 209.5925,
+            "fps": 4.775
+        },
+        {
+            "variant": "A2_Plus_Temporal",
+            "precision": 0.1908,
+            "recall": 0.085725,
+            "f1_score": 0.10715,
+            "localization_error_m": 1.36495,
+            "jitter_m": 3.749,
+            "latency_ms": 190.9925,
+            "fps": 5.275
+        },
+        {
+            "variant": "A3_Plus_Reliability",
+            "precision": 0.556325,
+            "recall": 0.1244,
+            "f1_score": 0.10805000000000001,
+            "localization_error_m": 1.385275,
+            "jitter_m": 1.060225,
+            "latency_ms": 172.83249999999998,
+            "fps": 5.875
+        },
+        {
+            "variant": "A4_Plus_Adaptive_Weights",
+            "precision": 0.5509999999999999,
+            "recall": 0.120225,
+            "f1_score": 0.1111,
+            "localization_error_m": 1.3726,
+            "jitter_m": 1.0839,
+            "latency_ms": 80.575,
+            "fps": 12.45
+        },
+        {
+            "variant": "A5_Plus_Hysteresis_Health",
+            "precision": 0.5695,
+            "recall": 0.11605,
+            "f1_score": 0.119225,
+            "localization_error_m": 1.483625,
+            "jitter_m": 1.07845,
+            "latency_ms": 149.9475,
+            "fps": 7.0249999999999995
+        },
+        {
+            "variant": "A6_Full_Proposed",
+            "precision": 0.3286,
+            "recall": 0.052375000000000005,
+            "f1_score": 0.067225,
+            "localization_error_m": 0.97315,
+            "jitter_m": 6.639425,
+            "latency_ms": 127.5,
+            "fps": 8.15
+        }
+    ]
+}

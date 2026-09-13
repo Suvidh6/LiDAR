@@ -22,15 +22,42 @@ def get_data_dir() -> Path:
 def get_results_dir() -> Path:
     return PROJECT_ROOT / "results"
 
-def get_metrics_dir() -> Path:
-    p = get_results_dir() / "metrics"
+def get_benchmark_dir() -> Path:
+    p = get_results_dir() / "benchmark"
     p.mkdir(parents=True, exist_ok=True)
     return p
 
-def get_plots_dir() -> Path:
-    p = get_results_dir() / "plots"
+def get_ablation_dir() -> Path:
+    p = get_results_dir() / "ablation"
     p.mkdir(parents=True, exist_ok=True)
     return p
+
+def get_literature_comparison_dir() -> Path:
+    p = get_results_dir() / "literature_comparison"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+def get_figures_dir() -> Path:
+    p = get_results_dir() / "figures"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+def get_tables_dir() -> Path:
+    p = get_results_dir() / "tables"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+def get_summaries_dir() -> Path:
+    p = get_results_dir() / "summaries"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+# Backward-compatibility aliases mapping to clean results taxonomy
+def get_metrics_dir() -> Path:
+    return get_benchmark_dir()
+
+def get_plots_dir() -> Path:
+    return get_figures_dir()
 
 def resolve_path(relative_or_abs: str) -> Path:
     p = Path(relative_or_abs)

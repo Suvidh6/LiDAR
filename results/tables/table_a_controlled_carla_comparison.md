@@ -1,0 +1,13 @@
+# Table A: Controlled CARLA Benchmark Comparison (Primary Apples-to-Apples)
+
+| Method                   |   Precision |   Recall |     F1 | Localization Error (m)   |   Confidence |   Latency (ms) |   FPS |
+|:-------------------------|------------:|---------:|-------:|:-------------------------|-------------:|---------------:|------:|
+| Camera-Only              |      0.1098 |   0.0928 | 0.0856 | N/A (2D monocular)       |       0.3204 |         232.09 |   4.3 |
+| LiDAR-Only               |      0.0883 |   0.0458 | 0.0591 | 1.5149                   |       0.3187 |         232.23 |   4.3 |
+| Late Fusion (Fixed)      |      0.2286 |   0.0524 | 0.0832 | 1.1686                   |       0.1764 |         232.21 |   4.3 |
+| Dempster-Shafer          |      0.2979 |   0.0497 | 0.0569 | 1.1864                   |       0.246  |         232.45 |   4.3 |
+| Distance-Adaptive        |      0.3378 |   0.0339 | 0.0554 | 0.9295                   |       0.1134 |         232.27 |   4.3 |
+| Temporal Fusion          |      0.1564 |   0.0735 | 0.0935 | 1.1353                   |       0.2807 |         232.77 |   4.3 |
+| Proposed Adaptive Fusion |      0.3188 |   0.0431 | 0.0551 | 1.2212                   |       0.2363 |         234.22 |   4.3 |
+
+*Protocol: Synchronous CARLA 0.9.16 sequence (20 Hz, 70 frames). All methods evaluated against authoritative CARLA ground truth. Camera-Only evaluated on 2D GT bounding boxes (IoU >= 0.50); 3D methods evaluated on 3D GT centroids (Euclidean distance <= 2.5m).*

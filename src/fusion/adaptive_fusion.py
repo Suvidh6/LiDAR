@@ -4,17 +4,18 @@ Unified Multimodal Fusion Engine implementing adaptive weighting,
 health states, reliability trends, and baseline comparators.
 
 Paradigms implemented:
-1. Camera-Only Baseline
-2. LiDAR-Only Baseline
-3. Late Fusion (Fixed 50/50)
+1. Camera-Only Baseline (monocular 2D, strictly independent of LiDAR)
+2. LiDAR-Only Baseline (3D point cloud, strictly independent of camera)
+3. Late Fusion (Fixed 50/50 weights)
 4. Dempster-Shafer Evidential Fusion
 5. Distance-Adaptive Fusion
-6. Temporal Multi-Frame Fusion
-7. Reliability-Aware Adaptive Fusion (Proposed)
+6. Temporal Multi-Frame Fusion (Kalman filter with IMU ego-motion compensation)
+7. Reliability-Aware Adaptive Fusion (Proposed framework)
 """
 
 import numpy as np
 from .reliability_estimation import ReliabilityEstimator, SensorHealthState, ReliabilityTrend
+from ..dataset.base import Calibration
 
 class FusedDetection:
     """Represents a fused perception object output with full diagnostic metadata."""
@@ -23,7 +24,7 @@ class FusedDetection:
                  source_mode="fused", bbox_2d=None, bbox_3d=None,
                  cam_health=None, lidar_health=None,
                  cam_trend=None, lidar_trend=None, consistency=1.0):
-        self.position = np.asarray(position, dtype=np.float64)  # [x, y, z] in vehicle/lidar frame
+        self.position = np.asarray(position, dtype=np.float64)  # [x, y, z] in LiDAR/vehicle frame
         self.confidence = float(np.clip(confidence, 0.01, 0.99))
         self.class_name = str(class_name)
         self.r_cam = float(r_cam)
@@ -64,13 +65,14 @@ class AdaptiveFusionEngine:
     hysteresis smoothing, health state transitions, and benchmark baselines.
     """
     def __init__(self, camera_max_range=45.0, nominal_lidar_points=2500,
-                 smoothing_alpha=0.65, health_thresholds=None):
+                 smoothing_alpha=0.65, health_thresholds=None, calibration=None):
         self.estimator = ReliabilityEstimator(
             camera_max_range=camera_max_range,
             nominal_lidar_points=nominal_lidar_points,
             health_thresholds=health_thresholds,
             smoothing_alpha=smoothing_alpha
         )
+        self.calibration = calibration or Calibration()
         self.prev_w_cam = 0.5
         self.prev_w_lidar = 0.5
         self.prev_r_cam = 0.8
@@ -90,44 +92,35 @@ class AdaptiveFusionEngine:
         return self.estimator.estimate_lidar_reliability(*args, **kwargs)
 
     # -------------------------------------------------------------
-    # FUSION METHODS
+    # 1. CAMERA-ONLY BASELINE (Method 1)
     # -------------------------------------------------------------
+    def fuse_camera_only(self, camera_dets):
+        """
+        Method 1: Camera-only perception baseline.
+        Input: 2D detections from CameraDetector.detect().
+        STRICT ISOLATION:
+        - Does NOT access LiDAR point clouds.
+        - Does NOT access LiDAR detections.
+        - Does NOT access LiDAR-camera association.
+        - Does NOT invent arbitrary pseudo-3D positions.
+        Returns list of CameraDetection objects evaluated on 2D Ground Truth.
+        """
+        return list(camera_dets)
 
-    def fuse_camera_only(self, matched_pairs, unmatched_cam):
-        """Method 1: Camera-only baseline."""
+    # -------------------------------------------------------------
+    # 2. LIDAR-ONLY BASELINE (Method 2)
+    # -------------------------------------------------------------
+    def fuse_lidar_only(self, lidar_clusters):
+        """
+        Method 2: LiDAR-only perception baseline.
+        Input: 3D clusters from LiDARDetector.detect().
+        STRICT ISOLATION:
+        - Does NOT access Camera images.
+        - Does NOT access Camera detections.
+        Returns list of FusedDetection objects with 3D centroids.
+        """
         fused = []
-        for m in matched_pairs:
-            cam = m["camera_det"]
-            lid = m["lidar_cluster"]
-            fused.append(FusedDetection(
-                position=lid.centroid,
-                confidence=cam.confidence,
-                class_name=cam.class_name,
-                r_cam=cam.confidence,
-                r_lidar=0.0,
-                w_cam=1.0,
-                w_lidar=0.0,
-                source_mode="camera_only"
-            ))
-        for cam in unmatched_cam:
-            pseudo_pos = [20.0, (cam.centroid_2d[0] - 400.0) * (20.0 / 400.0), 0.0]
-            fused.append(FusedDetection(
-                position=pseudo_pos,
-                confidence=cam.confidence * 0.8,
-                class_name=cam.class_name,
-                r_cam=cam.confidence * 0.5,
-                r_lidar=0.0,
-                w_cam=1.0,
-                w_lidar=0.0,
-                source_mode="camera_only"
-            ))
-        return fused
-
-    def fuse_lidar_only(self, matched_pairs, unmatched_lid):
-        """Method 2: LiDAR-only baseline."""
-        fused = []
-        for m in matched_pairs:
-            lid = m["lidar_cluster"]
+        for lid in lidar_clusters:
             fused.append(FusedDetection(
                 position=lid.centroid,
                 confidence=lid.geometric_score,
@@ -136,65 +129,75 @@ class AdaptiveFusionEngine:
                 r_lidar=lid.geometric_score,
                 w_cam=0.0,
                 w_lidar=1.0,
-                source_mode="lidar_only"
-            ))
-        for lid in unmatched_lid:
-            fused.append(FusedDetection(
-                position=lid.centroid,
-                confidence=lid.geometric_score * 0.85,
-                class_name="vehicle",
-                r_cam=0.0,
-                r_lidar=lid.geometric_score,
-                w_cam=0.0,
-                w_lidar=1.0,
-                source_mode="lidar_only"
+                source_mode="lidar_only",
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
         return fused
 
-    def fuse_late_fixed(self, matched_pairs, unmatched_cam, unmatched_lid, w_cam=0.5, w_lidar=0.5):
-        """Method 3: Late decision fusion with fixed 50/50 weights."""
+    # -------------------------------------------------------------
+    # 3. LATE FIXED 50/50 FUSION (Method 3)
+    # -------------------------------------------------------------
+    def fuse_late_fixed(self, matched_pairs, unmatched_cam, unmatched_lid,
+                        calibration=None, w_cam=0.5, w_lidar=0.5):
+        """
+        Method 3: Late decision fusion with fixed static weights (50/50).
+        Blends camera bearing back-projection and LiDAR centroid for matched pairs.
+        """
+        calib = calibration or self.calibration
         fused = []
         for m in matched_pairs:
             cam = m["camera_det"]
             lid = m["lidar_cluster"]
+            u, v = cam.centroid_2d
+            depth = max(1.0, lid.radial_distance)
+            p_cam_ray = calib.camera_ray_to_3d(u, v, depth)
+
+            pos_fused = w_cam * p_cam_ray + w_lidar * lid.centroid
             conf = w_cam * cam.confidence + w_lidar * lid.geometric_score
+
             fused.append(FusedDetection(
-                position=lid.centroid,
+                position=pos_fused,
                 confidence=conf,
                 class_name=cam.class_name,
                 r_cam=cam.confidence,
                 r_lidar=lid.geometric_score,
                 w_cam=w_cam,
                 w_lidar=w_lidar,
-                source_mode="late_fixed"
+                source_mode="late_fixed",
+                bbox_2d=cam.bbox,
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
-        for cam in unmatched_cam:
-            pseudo_pos = [20.0, (cam.centroid_2d[0] - 400.0) * (20.0 / 400.0), 0.0]
-            fused.append(FusedDetection(
-                position=pseudo_pos,
-                confidence=cam.confidence * w_cam,
-                class_name=cam.class_name,
-                w_cam=w_cam, w_lidar=0.0,
-                source_mode="late_fixed_cam"
-            ))
+
         for lid in unmatched_lid:
             fused.append(FusedDetection(
                 position=lid.centroid,
                 confidence=lid.geometric_score * w_lidar,
                 class_name="vehicle",
-                w_cam=0.0, w_lidar=w_lidar,
-                source_mode="late_fixed_lidar"
+                r_cam=0.0,
+                r_lidar=lid.geometric_score,
+                w_cam=0.0,
+                w_lidar=w_lidar,
+                source_mode="late_fixed_lidar",
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
         return fused
 
+    # -------------------------------------------------------------
+    # 4. DEMPSTER-SHAFER EVIDENTIAL FUSION (Method 4)
+    # -------------------------------------------------------------
     def fuse_dempster_shafer(self, matched_pairs, unmatched_cam, unmatched_lid,
-                             image_quality, total_cloud_points):
-        """Method 4: Simplified implementation inspired by Dempster-Shafer evidential fusion."""
+                             image_quality, total_cloud_points, calibration=None):
+        """
+        Method 4: Dempster-Shafer evidential fusion.
+        Constructs belief masses for object hypothesis and uncertainty theta,
+        combines via Dempster's rule, and allocates weights proportionally to evidence.
+        """
+        calib = calibration or self.calibration
         fused = []
         for m in matched_pairs:
             cam = m["camera_det"]
             lid = m["lidar_cluster"]
-            d = lid.radial_distance
+            d = max(1.0, lid.radial_distance)
 
             m_cam_obj = self.estimate_camera_reliability(cam, image_quality, d)
             m_cam_theta = 1.0 - m_cam_obj
@@ -206,87 +209,124 @@ class AdaptiveFusionEngine:
                            m_cam_obj * m_lid_theta +
                            m_cam_theta * m_lid_obj)
 
-            w_c = m_cam_obj / max(1e-4, m_cam_obj + m_lid_obj)
-            w_l = m_lid_obj / max(1e-4, m_cam_obj + m_lid_obj)
+            denom = m_cam_obj + m_lid_obj + 1e-6
+            w_c = m_cam_obj / denom
+            w_l = m_lid_obj / denom
+
+            u, v = cam.centroid_2d
+            p_cam_ray = calib.camera_ray_to_3d(u, v, d)
+            pos_fused = w_c * p_cam_ray + w_l * lid.centroid
 
             fused.append(FusedDetection(
-                position=lid.centroid,
+                position=pos_fused,
                 confidence=m_fused_obj,
                 class_name=cam.class_name,
                 r_cam=m_cam_obj,
                 r_lidar=m_lid_obj,
                 w_cam=w_c,
                 w_lidar=w_l,
-                source_mode="dempster_shafer"
+                source_mode="dempster_shafer",
+                bbox_2d=cam.bbox,
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
 
         for lid in unmatched_lid:
             m_lid = self.estimate_lidar_reliability(lid, total_cloud_points, lid.radial_distance)
             fused.append(FusedDetection(
                 position=lid.centroid,
-                confidence=m_lid * 0.8,
+                confidence=m_lid * 0.80,
                 class_name="vehicle",
-                r_cam=0.0, r_lidar=m_lid,
-                w_cam=0.0, w_lidar=1.0,
-                source_mode="ds_lidar"
+                r_cam=0.0,
+                r_lidar=m_lid,
+                w_cam=0.0,
+                w_lidar=1.0,
+                source_mode="ds_lidar",
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
         return fused
 
-    def fuse_distance_adaptive(self, matched_pairs, unmatched_cam, unmatched_lid):
-        """Method 5: Simplified implementation inspired by distance-adaptive heuristic weighting."""
+    # -------------------------------------------------------------
+    # 5. DISTANCE-ADAPTIVE FUSION (Method 5)
+    # -------------------------------------------------------------
+    def fuse_distance_adaptive(self, matched_pairs, unmatched_cam, unmatched_lid, calibration=None):
+        """
+        Method 5: Distance-adaptive heuristic fusion.
+        Shifts weight from camera to LiDAR purely as a function of radial distance d.
+        Blind to noise, fog, blur, or sensor dropouts.
+        """
+        calib = calibration or self.calibration
         fused = []
         for m in matched_pairs:
             cam = m["camera_det"]
             lid = m["lidar_cluster"]
             d = max(1.0, lid.radial_distance)
 
+            # Heuristic distance curve: camera favored at short range, lidar favored at long range
             w_cam = float(np.clip(1.0 / (1.0 + (d / 18.0)**1.5), 0.10, 0.90))
             w_lid = 1.0 - w_cam
+
+            u, v = cam.centroid_2d
+            p_cam_ray = calib.camera_ray_to_3d(u, v, d)
+            pos_fused = w_cam * p_cam_ray + w_lid * lid.centroid
             conf = w_cam * cam.confidence + w_lid * lid.geometric_score
 
             fused.append(FusedDetection(
-                position=lid.centroid,
+                position=pos_fused,
                 confidence=conf,
                 class_name=cam.class_name,
                 r_cam=cam.confidence,
                 r_lidar=lid.geometric_score,
                 w_cam=w_cam,
                 w_lidar=w_lid,
-                source_mode="distance_adaptive"
+                source_mode="distance_adaptive",
+                bbox_2d=cam.bbox,
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
+
         for lid in unmatched_lid:
+            d = max(1.0, lid.radial_distance)
+            w_lid = float(np.clip(1.0 - 1.0 / (1.0 + (d / 18.0)**1.5), 0.10, 0.90))
             fused.append(FusedDetection(
                 position=lid.centroid,
-                confidence=lid.geometric_score * 0.75,
+                confidence=lid.geometric_score * w_lid,
                 class_name="vehicle",
-                w_cam=0.0, w_lidar=1.0,
-                source_mode="dist_lidar"
+                r_cam=0.0,
+                r_lidar=lid.geometric_score,
+                w_cam=0.0,
+                w_lidar=w_lid,
+                source_mode="dist_lidar",
+                bbox_3d=lid.min_bound.tolist() + lid.max_bound.tolist()
             ))
         return fused
 
+    # -------------------------------------------------------------
+    # 7. PROPOSED RELIABILITY-AWARE ADAPTIVE SENSOR FUSION (Method 7)
+    # -------------------------------------------------------------
     def fuse_reliability_adaptive(self, matched_pairs, unmatched_cam, unmatched_lid,
-                                  image_quality, total_cloud_points, imu_state=None,
-                                  temporal_tracks=None, compensator=None, dt=0.05):
+                                  image_quality, total_cloud_points, calibration=None,
+                                  imu_state=None, temporal_tracks=None, compensator=None, dt=0.05):
         """
-        Method 7: Proposed Reliability-Aware Adaptive Sensor Fusion.
+        Method 7: Proposed Reliability-Aware Adaptive Multimodal Perception.
         Integrates:
-        - Multi-criteria physical reliability
-        - Temporal smoothing / hysteresis
-        - Sensor health classification
-        - Dynamic trend derivatives
-        - Cross-modal consistency
-        - Failure fallback preservation
+        - Multi-criteria physical reliability (R_cam and R_lidar)
+        - Dynamic health state machine (HEALTHY, DEGRADED, SEVERELY_DEGRADED, FAILED)
+        - Trend derivative classification (RAPIDLY_DEGRADING, DEGRADING, STABLE, IMPROVING)
+        - Temporal hysteresis smoothing of sensor weights
+        - Cross-modal spatial consistency evaluation
+        - Camera bearing ray projection and adaptive position refinement
+        - Calibrated confidence estimation
+        - Failure fallback isolation
         """
+        calib = calibration or self.calibration
         fused = []
-        frame_r_cam_list = []
-        frame_r_lidar_list = []
 
         # 1. Matched Multimodal Detections
         for m in matched_pairs:
             cam = m["camera_det"]
             lid = m["lidar_cluster"]
-            d = lid.radial_distance
+            d = max(1.0, lid.radial_distance)
 
+            # Query temporal track persistence if available
             persistence = 1.0
             if temporal_tracks:
                 dists = [np.linalg.norm(trk.position - lid.centroid) for trk in temporal_tracks]
@@ -301,13 +341,27 @@ class AdaptiveFusionEngine:
                 lid, total_cloud_points, d, persistence=persistence
             )
 
-            frame_r_cam_list.append(r_cam)
-            frame_r_lidar_list.append(r_lidar)
+            # Health classification
+            cam_health = self.estimator.classify_health(r_cam)
+            lidar_health = self.estimator.classify_health(r_lidar)
 
-            # Raw normalized weights
-            denom = r_cam + r_lidar + 1e-6
-            w_c_raw = r_cam / denom
-            w_l_raw = r_lidar / denom
+            # Trend derivatives
+            _, cam_trend = self.estimator.compute_trend(r_cam, self.prev_r_cam, dt=dt)
+            _, lidar_trend = self.estimator.compute_trend(r_lidar, self.prev_r_lidar, dt=dt)
+            self.prev_r_cam = r_cam
+            self.prev_r_lidar = r_lidar
+
+            # Raw weight calculation with health-state isolation
+            if cam_health == SensorHealthState.FAILED or cam_health == SensorHealthState.SEVERELY_DEGRADED:
+                w_c_raw = 0.05
+                w_l_raw = 0.95
+            elif lidar_health == SensorHealthState.FAILED or lidar_health == SensorHealthState.SEVERELY_DEGRADED:
+                w_c_raw = 0.95
+                w_l_raw = 0.05
+            else:
+                denom = r_cam + r_lidar + 1e-6
+                w_c_raw = r_cam / denom
+                w_l_raw = r_lidar / denom
 
             # Temporal hysteresis smoothing
             w_cam, w_lidar = self.estimator.smooth_weights(
@@ -316,24 +370,27 @@ class AdaptiveFusionEngine:
             self.prev_w_cam = w_cam
             self.prev_w_lidar = w_lidar
 
-            # Health states and trends
-            cam_health = self.estimator.classify_health(r_cam)
-            lidar_health = self.estimator.classify_health(r_lidar)
-            _, cam_trend = self.estimator.compute_trend(r_cam, self.prev_r_cam, dt=dt)
-            _, lidar_trend = self.estimator.compute_trend(r_lidar, self.prev_r_lidar, dt=dt)
-            self.prev_r_cam = r_cam
-            self.prev_r_lidar = r_lidar
+            # Position fusion: Camera ray refinement
+            u, v = cam.centroid_2d
+            p_cam_ray = calib.camera_ray_to_3d(u, v, d)
+
+            if cam_health == SensorHealthState.FAILED:
+                pos_fused = lid.centroid.copy()
+            elif lidar_health == SensorHealthState.FAILED:
+                pos_fused = p_cam_ray.copy()
+            else:
+                pos_fused = w_cam * p_cam_ray + w_lidar * lid.centroid
 
             # Cross-modal consistency
             consistency = 1.0
             if compensator is not None:
                 consistency = self.estimator.compute_cross_modal_consistency(cam, lid, compensator)
 
-            # Calibrated confidence: combines sensor agreement with modality health
+            # Calibrated fused confidence
             conf_fused = 1.0 - (1.0 - r_cam) * (1.0 - r_lidar)
 
             fused.append(FusedDetection(
-                position=lid.centroid,
+                position=pos_fused,
                 confidence=conf_fused,
                 class_name=cam.class_name,
                 r_cam=r_cam,
@@ -350,41 +407,16 @@ class AdaptiveFusionEngine:
                 consistency=consistency
             ))
 
-        # 2. Unmatched Camera Detections (Fallback with reliability check)
-        for cam in unmatched_cam:
-            r_cam = self.estimate_camera_reliability(
-                cam, image_quality, distance=20.0, imu_state=imu_state, persistence=0.5
-            )
-            cam_health = self.estimator.classify_health(r_cam)
-            _, cam_trend = self.estimator.compute_trend(r_cam, self.prev_r_cam, dt=dt)
-            is_obstacle = cam.class_name.lower() in ["car", "truck", "bus", "motorcycle", "bicycle", "vehicle", "person"]
-            if is_obstacle and r_cam >= 0.25:
-                pseudo_pos = [20.0, (cam.centroid_2d[0] - 400.0) * (20.0 / 400.0), 0.0]
-                fused.append(FusedDetection(
-                    position=pseudo_pos,
-                    confidence=r_cam * 0.75,
-                    class_name=cam.class_name,
-                    r_cam=r_cam,
-                    r_lidar=0.01,
-                    w_cam=1.0,
-                    w_lidar=0.0,
-                    source_mode="adaptive_cam_fallback",
-                    bbox_2d=cam.bbox,
-                    cam_health=cam_health,
-                    lidar_health=SensorHealthState.FAILED,
-                    cam_trend=cam_trend,
-                    lidar_trend=ReliabilityTrend.STABLE,
-                    consistency=0.5
-                ))
-
-        # 3. Unmatched LiDAR Clusters (Fallback with reliability check)
+        # 2. Unmatched LiDAR Clusters (Admit only if healthy)
         for lid in unmatched_lid:
+            d = max(1.0, lid.radial_distance)
             r_lidar = self.estimate_lidar_reliability(
-                lid, total_cloud_points, distance=lid.radial_distance, persistence=0.5
+                lid, total_cloud_points, distance=d, persistence=0.5
             )
             lidar_health = self.estimator.classify_health(r_lidar)
             _, lidar_trend = self.estimator.compute_trend(r_lidar, self.prev_r_lidar, dt=dt)
-            if r_lidar >= 0.05:
+
+            if r_lidar >= 0.15 and lidar_health != SensorHealthState.FAILED:
                 fused.append(FusedDetection(
                     position=lid.centroid,
                     confidence=r_lidar,
